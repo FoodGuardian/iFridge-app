@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">FoodGuardian</string>
+    <string name="productenlijst">Productenlijst</string>
+    <string name="recepten">recepten</string>
+    <string name="instellingen">Instellingen</string>
+    <string name="overig">Overig</string>
+    <string name="foodguardian">foodGuardian</string>
+    <string name="online">Online</string>
 </resources>
