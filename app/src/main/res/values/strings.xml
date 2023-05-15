@@ -6,4 +6,5 @@
     <string name="overig">Overig</string>
     <string name="foodguardian">foodGuardian</string>
     <string name="online">Online</string>
+    <string name="geen_verbinding">Geen verbinding</string>
 </resources>
