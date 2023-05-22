@@ -53,36 +53,13 @@
             app:layout_constraintTop_toBottomOf="@id/header">
 
             <LinearLayout
+                android:id="@+id/productList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingLeft="20dp"
                 android:paddingTop="20dp"
-                android:paddingRight="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:layout_marginBottom="20dp"
-                    android:background="@drawable/product"
-                    android:orientation="horizontal">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="150dp"
-                        android:layout_height="150dp"
-                        android:padding="20dp">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:src="@drawable/nowifi"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </LinearLayout>
-            </LinearLayout>
+                android:paddingRight="20dp" />
         </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
