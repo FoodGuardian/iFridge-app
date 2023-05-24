@@ -13,7 +13,7 @@ class Screen : AppCompatActivity() {
 
     private lateinit var layoutToolBarWithNetwork : ConstraintLayout
     private lateinit var layoutToolBarWithNoNetwork : ConstraintLayout
-    private var productGenerator = ProductList(this)
+    private var productList = ProductList(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +21,7 @@ class Screen : AppCompatActivity() {
 
         checkNetworkConnection()
 
-        var slippers = productGenerator.addProduct(
+        var slippers = productList.addProduct(
             "https://www.misterslipper.nl/wp-content/uploads/2019/08/markrutte_thumb.jpg",
             "FoodGuardian",
             "Mark Rutte Slippers",
