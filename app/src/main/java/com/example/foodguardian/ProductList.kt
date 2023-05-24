@@ -13,7 +13,7 @@ import java.net.URL
 
 class Product(val imageUrl: String, val brandName: String, val productName: String, val expirationDate: String)
 
-class ProductGenerator(private val context: AppCompatActivity) {
+class ProductList(private val context: AppCompatActivity) {
     var products = mutableMapOf<LinearLayout, Product>()
 
     fun addProduct(imageUrl: String, brandName: String, productName: String, expirationDate: String): LinearLayout {

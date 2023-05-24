@@ -3,7 +3,6 @@ package com.example.foodguardian
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -14,7 +13,7 @@ class Screen : AppCompatActivity() {
 
     private lateinit var layoutToolBarWithNetwork : ConstraintLayout
     private lateinit var layoutToolBarWithNoNetwork : ConstraintLayout
-    private var productGenerator = ProductGenerator(this)
+    private var productGenerator = ProductList(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +28,7 @@ class Screen : AppCompatActivity() {
             "Nooit"
         )
         slippers.setOnClickListener {
-            
+
         }
 
         layoutToolBarWithNetwork = findViewById(R.id.layoutToolBarWithNetwork)
