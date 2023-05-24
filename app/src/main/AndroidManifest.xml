@@ -16,7 +16,7 @@
         android:theme="@style/Theme.FoodGuardian"
         tools:targetApi="31">
         <activity
-            android:name=".Scherm"
+            android:name=".Screen"
                 android:label="Scherm"
             />
         <activity
