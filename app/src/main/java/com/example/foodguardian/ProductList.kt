@@ -9,7 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.setPadding
+import java.net.SocketTimeoutException
 import java.net.URL
+import java.util.concurrent.BlockingQueue
+import java.util.concurrent.LinkedBlockingQueue
 
 class Product(val imageUrl: String, val brandName: String, val productName: String, val expirationDate: String)
 
@@ -22,9 +25,9 @@ class ProductList(private val context: AppCompatActivity) {
         }
     }
 
-    fun addProduct(imageUrl: String, brandName: String, productName: String, expirationDate: String): LinearLayout {
-        var density = this.context.resources.displayMetrics.density.toInt()
+    fun addProduct(imageUrl: String, brandName: String, productName: String, expirationDate: String): LinearLayout? {
         var productList = this.context.findViewById<LinearLayout>(R.id.productList)
+        var density = this.context.resources.displayMetrics.density.toInt()
         var linearLayout = LinearLayout(this.context)
         var params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 200 * density)
         params.bottomMargin = 20 * density
@@ -60,12 +63,14 @@ class ProductList(private val context: AppCompatActivity) {
         var params5 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.0f)
         textView.layoutParams = params5
         textView.text = brandName
+        textView.setTextColor(this.context.resources.getColor(R.color.white, null))
         textView.textSize = (8 * density).toFloat()
         textView.id = View.generateViewId()
         linearLayout2.addView(textView)
         var textView2 = TextView(this.context)
         textView2.layoutParams = params5
         textView2.text = productName
+        textView2.setTextColor(this.context.resources.getColor(R.color.white, null))
         textView2.textSize = (10 * density).toFloat()
         textView2.id = View.generateViewId()
         linearLayout2.addView(textView2)
@@ -73,17 +78,19 @@ class ProductList(private val context: AppCompatActivity) {
         textView3.layoutParams = params5
         var expiration = "Houdbaar tot: $expirationDate"
         textView3.text = expiration
+        textView3.setTextColor(this.context.resources.getColor(R.color.white, null))
         textView3.textSize = (8 * density).toFloat()
         textView3.id = View.generateViewId()
         linearLayout2.addView(textView3)
         Thread {
-            var connection = URL(imageUrl).openConnection()
-            connection.connect()
-            var bitmap = BitmapFactory.decodeStream(connection.getInputStream())
-
-            this.context.runOnUiThread {
-                imageView.setImageBitmap(bitmap)
-            }
+            try {
+                var connection = URL(imageUrl).openConnection()
+                connection.connect()
+                var bitmap = BitmapFactory.decodeStream(connection.getInputStream())
+                this.context.runOnUiThread {
+                    imageView.setImageBitmap(bitmap)
+                }
+            } catch (exc: Exception) {}
         }.start()
         this.products[linearLayout] = Product(imageUrl, brandName, productName, expirationDate)
         return linearLayout

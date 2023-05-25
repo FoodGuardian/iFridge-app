@@ -18,7 +18,8 @@ class Screen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scherm)
-
+        layoutToolBarWithNetwork = findViewById(R.id.layoutToolBarWithNetwork)
+        layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
         checkNetworkConnection()
 
         productList.addProduct(
@@ -77,9 +78,6 @@ class Screen : AppCompatActivity() {
             "01/01/2024"
         )
 
-        layoutToolBarWithNetwork = findViewById(R.id.layoutToolBarWithNetwork)
-        layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
-
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
 
         findViewById<View>(R.id.imageMenudropdown).setOnClickListener {
@@ -88,17 +86,16 @@ class Screen : AppCompatActivity() {
     }
 
     private fun checkNetworkConnection(){
-       cld = ConnectionCheck(application)
+        cld = ConnectionCheck(application)
 
-       cld.observe(this) { isConnected ->
-           if (isConnected) {
-               layoutToolBarWithNetwork.visibility = View.VISIBLE
-               layoutToolBarWithNoNetwork.visibility = View.GONE
-           } else {
-               layoutToolBarWithNetwork.visibility = View.GONE
-               layoutToolBarWithNoNetwork.visibility = View.VISIBLE
-           }
-       }
+        cld.observe(this) { isConnected ->
+            if (isConnected) {
+                layoutToolBarWithNetwork.visibility = View.VISIBLE
+                layoutToolBarWithNoNetwork.visibility = View.GONE
+            } else {
+                layoutToolBarWithNetwork.visibility = View.GONE
+                layoutToolBarWithNoNetwork.visibility = View.VISIBLE
+            }
+        }
     }
-
 }
