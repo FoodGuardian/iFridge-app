@@ -16,6 +16,12 @@ class Product(val imageUrl: String, val brandName: String, val productName: Stri
 class ProductList(private val context: AppCompatActivity) {
     var products = mutableMapOf<LinearLayout, Product>()
 
+    fun syncProducts() {
+        for (product in this.products) {
+            this.removeProduct(product.key)
+        }
+    }
+
     fun addProduct(imageUrl: String, brandName: String, productName: String, expirationDate: String): LinearLayout {
         var density = this.context.resources.displayMetrics.density.toInt()
         var productList = this.context.findViewById<LinearLayout>(R.id.productList)

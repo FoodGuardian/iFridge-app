@@ -21,15 +21,61 @@ class Screen : AppCompatActivity() {
 
         checkNetworkConnection()
 
-        var slippers = productList.addProduct(
-            "https://www.misterslipper.nl/wp-content/uploads/2019/08/markrutte_thumb.jpg",
-            "FoodGuardian",
-            "Mark Rutte Slippers",
-            "Nooit"
+        productList.addProduct(
+            "https://static.ah.nl/dam/product/AHI_43545239393038353931?revLabel=1&rendition=800x800_JPG_Q90&fileType=binary",
+            "AH",
+            "Kaasblokjes",
+            "01/01/2024"
         )
-        slippers.setOnClickListener {
 
-        }
+        productList.addProduct(
+            "https://partyverhuren.nl/wp-content/uploads/2017/03/4400-foto-1.jpg",
+            "Coca Cola",
+            "1L fles",
+            "01/01/2024"
+        )
+
+        productList.addProduct(
+            "https://static.ah.nl/dam/product/AHI_43545237303539303936?revLabel=4&rendition=800x800_JPG_Q90&fileType=binary",
+            "Hergo",
+            "Filet Americain",
+            "01/01/2024"
+        )
+
+        productList.addProduct(
+            "https://static-images.jumbo.com/product_images/144368ZK-2_360x360_2.png",
+            "Jumbo",
+            "Zoete kleine appeltjes",
+            "01/01/2024"
+        )
+
+        productList.addProduct(
+            "https://static-images.jumbo.com/product_images/142710FLS-1_360x360_2.png",
+            "Jumbo",
+            "Joppiesaus",
+            "01/01/2024"
+        )
+
+        productList.addProduct(
+            "https://kips.nl/wp-content/uploads/2020/03/kips-snijleverworst-125g.jpg",
+            "Kips",
+            "Snijleverworst",
+            "01/01/2024"
+        )
+
+        productList.addProduct(
+            "https://www.drinks4you.eu/wp-content/uploads/2021/05/022701..jpg",
+            "Hertog Jan",
+            "Pils",
+            "01/01/2024"
+        )
+
+        productList.addProduct(
+            "https://www.deprijshamer.nl/data/temp/monster-energy.93f98182d2e7772efdf5c95b0ad3b81d.jpg",
+            "Monster",
+            "Energy Drink",
+            "01/01/2024"
+        )
 
         layoutToolBarWithNetwork = findViewById(R.id.layoutToolBarWithNetwork)
         layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
