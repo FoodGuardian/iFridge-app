@@ -1,6 +1,7 @@
 package com.example.foodguardian
 
 import android.graphics.BitmapFactory
+import android.text.TextUtils
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -27,19 +28,26 @@ class ProductList(private val context: AppCompatActivity) {
 
     fun addProduct(imageUrl: String, brandName: String, productName: String, expirationDate: String): LinearLayout? {
         var productList = this.context.findViewById<LinearLayout>(R.id.productList)
-        var density = this.context.resources.displayMetrics.density.toInt()
+        var brandName = brandName
+        var productName = productName
+//        if (brandName.length > 16) {
+//            brandName = "${brandName.take(16)}..."
+//        }
+//        if (productName.length > 16) {
+//            productName = "${productName.take(16)}..."
+//        }
         var linearLayout = LinearLayout(this.context)
-        var params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 200 * density)
-        params.bottomMargin = 20 * density
+        var params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400)
+        params.bottomMargin = 40
         linearLayout.layoutParams = params
         linearLayout.setBackgroundResource(R.drawable.product)
         linearLayout.orientation = LinearLayout.HORIZONTAL
         linearLayout.id = View.generateViewId()
         productList.addView(linearLayout)
         var constraintLayout = ConstraintLayout(this.context)
-        var params2 = LinearLayout.LayoutParams(200 * density, 200 * density)
+        var params2 = LinearLayout.LayoutParams(400, 400)
         constraintLayout.layoutParams = params2
-        constraintLayout.setPadding(20 * density)
+        constraintLayout.setPadding(40)
         constraintLayout.id = View.generateViewId()
         linearLayout.addView(constraintLayout)
         var imageView = ImageView(this.context)
@@ -55,7 +63,7 @@ class ProductList(private val context: AppCompatActivity) {
         var linearLayout2 = LinearLayout(this.context)
         var params4 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
         linearLayout2.layoutParams = params4
-        linearLayout2.setPadding(0, 20 * density, 0, 20 * density)
+        linearLayout2.setPadding(0, 40, 40, 40)
         linearLayout2.orientation = LinearLayout.VERTICAL
         linearLayout2.id = View.generateViewId()
         linearLayout.addView(linearLayout2)
@@ -63,23 +71,29 @@ class ProductList(private val context: AppCompatActivity) {
         var params5 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.0f)
         textView.layoutParams = params5
         textView.text = brandName
+        textView.isSingleLine = true
+        textView.ellipsize = TextUtils.TruncateAt.END
         textView.setTextColor(this.context.resources.getColor(R.color.white, null))
-        textView.textSize = (8 * density).toFloat()
+        textView.textSize = 16.0f
         textView.id = View.generateViewId()
         linearLayout2.addView(textView)
         var textView2 = TextView(this.context)
         textView2.layoutParams = params5
         textView2.text = productName
+        textView2.isSingleLine = true
+        textView2.ellipsize = TextUtils.TruncateAt.END
         textView2.setTextColor(this.context.resources.getColor(R.color.white, null))
-        textView2.textSize = (10 * density).toFloat()
+        textView2.textSize = 20.0f
         textView2.id = View.generateViewId()
         linearLayout2.addView(textView2)
         var textView3 = TextView(this.context)
         textView3.layoutParams = params5
         var expiration = "Houdbaar tot: $expirationDate"
         textView3.text = expiration
+        textView3.isSingleLine = true
+        textView3.ellipsize = TextUtils.TruncateAt.END
         textView3.setTextColor(this.context.resources.getColor(R.color.white, null))
-        textView3.textSize = (8 * density).toFloat()
+        textView3.textSize = 14.0f
         textView3.id = View.generateViewId()
         linearLayout2.addView(textView3)
         Thread {
