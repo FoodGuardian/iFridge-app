@@ -10,10 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.setPadding
-import java.net.SocketTimeoutException
 import java.net.URL
-import java.util.concurrent.BlockingQueue
-import java.util.concurrent.LinkedBlockingQueue
 
 class Product(val imageUrl: String, val brandName: String, val productName: String, val expirationDate: String)
 
@@ -21,21 +18,18 @@ class ProductList(private val context: AppCompatActivity) {
     var products = mutableMapOf<LinearLayout, Product>()
 
     fun syncProducts() {
-        for (product in this.products) {
-            this.removeProduct(product.key)
+        for (product in this.products.keys) {
+            this.removeProduct(product)
         }
+        Thread {
+
+        }.start()
     }
 
     fun addProduct(imageUrl: String, brandName: String, productName: String, expirationDate: String): LinearLayout? {
         var productList = this.context.findViewById<LinearLayout>(R.id.productList)
         var brandName = brandName
         var productName = productName
-//        if (brandName.length > 16) {
-//            brandName = "${brandName.take(16)}..."
-//        }
-//        if (productName.length > 16) {
-//            productName = "${productName.take(16)}..."
-//        }
         var linearLayout = LinearLayout(this.context)
         var params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400)
         params.bottomMargin = 40
