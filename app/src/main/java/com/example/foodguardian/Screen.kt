@@ -1,9 +1,15 @@
 package com.example.foodguardian
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 
@@ -14,6 +20,8 @@ class Screen : AppCompatActivity() {
     private lateinit var layoutToolBarWithNetwork : ConstraintLayout
     private lateinit var layoutToolBarWithNoNetwork : ConstraintLayout
     private var productList = ProductList(this)
+    private var Channel_ID = "Channel_ID_Test"
+    private var Notification_ID = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +29,7 @@ class Screen : AppCompatActivity() {
         layoutToolBarWithNetwork = findViewById(R.id.layoutToolBarWithNetwork)
         layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
         checkNetworkConnection()
+        createNotificationChannel()
 
         productList.addProduct(
             "https://static.ah.nl/dam/product/AHI_43545239393038353931?revLabel=1&rendition=800x800_JPG_Q90&fileType=binary",
@@ -96,6 +105,33 @@ class Screen : AppCompatActivity() {
                 layoutToolBarWithNetwork.visibility = View.GONE
                 layoutToolBarWithNoNetwork.visibility = View.VISIBLE
             }
+        }
+    }
+
+
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Eten is bijna overdatum"
+            val descriptionText = "Het volgende product is bijna overdatum [Eten]"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(Channel_ID, name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun sendNotification(){
+        val builder = NotificationCompat.Builder(this, Channel_ID)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Overdatum")
+            .setContentText("Het volgende product is bijna overdatum [eten]")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        with(NotificationManagerCompat.from(this)){
+            notify(Notification_ID, builder.build())
         }
     }
 }
