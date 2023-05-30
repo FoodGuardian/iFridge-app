@@ -9,8 +9,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
@@ -18,6 +20,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 
 class Screen : AppCompatActivity() {
 
@@ -96,11 +99,21 @@ class Screen : AppCompatActivity() {
             "01/01/2024"
         )
 
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
-
+        var drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         findViewById<View>(R.id.imageMenudropdown).setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
+        findViewById<NavigationView>(R.id.navigationView).setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.menuProductList -> {
+                }
+                R.id.menuSettings -> {
+                }
+            }
+            drawerLayout.closeDrawer(GravityCompat.START)
+            true
+        }
+
     }
 
     private fun checkNetworkConnection(){
