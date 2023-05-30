@@ -10,26 +10,54 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.setPadding
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
 import java.net.URL
 
-class Product(val imageUrl: String, val brandName: String, val productName: String, val expirationDate: String)
+class Product(var productCode: String, var brandName: String, var productName: String, var expirationDate: String)
 
 class ProductList(private val context: AppCompatActivity) {
-    var products = mutableMapOf<LinearLayout, Product>()
+    private var products = mutableMapOf<LinearLayout, Product>()
 
     fun syncProducts() {
-        for (product in this.products.keys) {
-            this.removeProduct(product)
-        }
         Thread {
-
+            try {
+                var refreshLayout = this.context.findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
+                this.context.runOnUiThread {
+                    refreshLayout.isRefreshing = true
+                }
+                var iterator = this.products.iterator()
+                while (iterator.hasNext()) {
+                    var product = iterator.next()
+                    this.context.findViewById<LinearLayout>(R.id.productList).removeView(product.key)
+                    iterator.remove()
+                }
+                var connection = URL("http://ifridge.local/fetch").openConnection() as HttpURLConnection
+                connection.requestMethod = "POST"
+                connection.doOutput = true
+                connection.connect()
+                var streamReader = InputStreamReader(connection.inputStream)
+                var bufferReader = BufferedReader(streamReader)
+                var products = JSONArray(bufferReader.readText())
+                bufferReader.close()
+                streamReader.close()
+                this.context.runOnUiThread {
+                    for (i in 0 until products.length()) {
+                        var product = products[i] as JSONObject
+                        this.addProduct(product.getString("productId"), product.getString("brandName"), product.getString("productName"), product.getString("expirationDate"))
+                    }
+                    refreshLayout.isRefreshing = false
+                }
+            } catch (exc: Exception) {}
         }.start()
     }
 
-    fun addProduct(imageUrl: String, brandName: String, productName: String, expirationDate: String): LinearLayout {
+    private fun addProduct(productCode: String, brandName: String, productName: String, expirationDate: String): LinearLayout {
         var productList = this.context.findViewById<LinearLayout>(R.id.productList)
-        var brandName = brandName
-        var productName = productName
         var linearLayout = LinearLayout(this.context)
         var params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400)
         params.bottomMargin = 40
@@ -92,21 +120,23 @@ class ProductList(private val context: AppCompatActivity) {
         linearLayout2.addView(textView3)
         Thread {
             try {
-                var connection = URL(imageUrl).openConnection()
+                var connection = URL("https://world.openfoodfacts.org/api/v0/product/$productCode.json").openConnection()
+                connection.doOutput = true
                 connection.connect()
-                var bitmap = BitmapFactory.decodeStream(connection.getInputStream())
+                var streamReader = InputStreamReader(connection.inputStream)
+                var bufferReader = BufferedReader(streamReader)
+                var info = JSONObject(bufferReader.readText())
+                bufferReader.close()
+                streamReader.close()
+                var stream = URL(info.getJSONObject("product").getString("image_url")).openStream()
+                var bitmap = BitmapFactory.decodeStream(stream)
                 this.context.runOnUiThread {
                     imageView.setImageBitmap(bitmap)
                 }
             } catch (exc: Exception) {}
         }.start()
-        this.products[linearLayout] = Product(imageUrl, brandName, productName, expirationDate)
+        this.products[linearLayout] = Product(productCode, brandName, productName, expirationDate)
         return linearLayout
-    }
-
-    fun removeProduct(product: LinearLayout) {
-        this.context.findViewById<LinearLayout>(R.id.productList).removeView(product)
-        this.products.remove(product)
     }
 
     fun getProduct(product: LinearLayout): Product? {

@@ -43,24 +43,28 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
-
-        <ScrollView
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refreshLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="@id/layoutToolBarWithNetwork"
             app:layout_constraintEnd_toEndOf="@id/layoutToolBarWithNetwork"
             app:layout_constraintStart_toStartOf="@id/layoutToolBarWithNetwork"
             app:layout_constraintTop_toBottomOf="@id/header">
-
-            <LinearLayout
-                android:id="@+id/productList"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="20dp"
-                android:paddingTop="20dp"
-                android:paddingRight="20dp" />
-        </ScrollView>
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:id="@+id/productList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="20dp"
+                    android:paddingRight="20dp">
+                </LinearLayout>
+            </ScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

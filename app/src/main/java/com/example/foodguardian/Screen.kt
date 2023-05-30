@@ -20,10 +20,15 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+<<<<<<< Updated upstream
 import com.google.android.material.navigation.NavigationView
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
+=======
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import java.net.InetAddress
+>>>>>>> Stashed changes
 
 class Screen : AppCompatActivity() {
 
@@ -45,68 +50,13 @@ class Screen : AppCompatActivity() {
         ensureNotificationPermission()
         createNotificationChannel()
 
-        productList.addProduct(
-            "https://static.ah.nl/dam/product/AHI_43545239393038353931?revLabel=1&rendition=800x800_JPG_Q90&fileType=binary",
-            "AH",
-            "Kaasblokjes",
-            "01/01/2024"
-        ).setOnClickListener {
-            sendNotification(it as LinearLayout)
-        }
-
-        productList.addProduct(
-            "https://partyverhuren.nl/wp-content/uploads/2017/03/4400-foto-1.jpg",
-            "Coca Cola",
-            "1L fles",
-            "01/01/2024"
-        )
-
-        productList.addProduct(
-            "https://static.ah.nl/dam/product/AHI_43545237303539303936?revLabel=4&rendition=800x800_JPG_Q90&fileType=binary",
-            "Hergo",
-            "Filet Americain",
-            "01/01/2024"
-        )
-
-        productList.addProduct(
-            "https://static-images.jumbo.com/product_images/144368ZK-2_360x360_2.png",
-            "Jumbo",
-            "Zoete kleine appeltjes",
-            "01/01/2024"
-        )
-
-        productList.addProduct(
-            "https://static-images.jumbo.com/product_images/142710FLS-1_360x360_2.png",
-            "Jumbo",
-            "Joppiesaus",
-            "01/01/2024"
-        )
-
-        productList.addProduct(
-            "https://kips.nl/wp-content/uploads/2020/03/kips-snijleverworst-125g.jpg",
-            "Kips",
-            "Snijleverworst",
-            "01/01/2024"
-        )
-
-        productList.addProduct(
-            "https://www.drinks4you.eu/wp-content/uploads/2021/05/022701..jpg",
-            "Hertog Jan",
-            "Pils",
-            "01/01/2024"
-        )
-
-        productList.addProduct(
-            "https://www.deprijshamer.nl/data/temp/monster-energy.93f98182d2e7772efdf5c95b0ad3b81d.jpg",
-            "Monster",
-            "Energy Drink",
-            "01/01/2024"
-        )
+        this.productList.syncProducts()
 
         var drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         findViewById<View>(R.id.imageMenudropdown).setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
+<<<<<<< Updated upstream
         findViewById<NavigationView>(R.id.navigationView).setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.menuProductList -> {
@@ -118,6 +68,12 @@ class Screen : AppCompatActivity() {
             true
         }
 
+=======
+        var refreshLayout = findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
+        refreshLayout.setOnRefreshListener {
+            this.productList.syncProducts()
+        }
+>>>>>>> Stashed changes
     }
 
     private fun checkNetworkConnection(){
