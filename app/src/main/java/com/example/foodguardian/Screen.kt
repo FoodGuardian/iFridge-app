@@ -1,15 +1,21 @@
 package com.example.foodguardian
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 
@@ -21,7 +27,7 @@ class Screen : AppCompatActivity() {
     private lateinit var layoutToolBarWithNoNetwork : ConstraintLayout
     private var productList = ProductList(this)
     private var Channel_ID = "Channel_ID_Test"
-    private var Notification_ID = 1
+    private var Notification_ID = 1304382
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +35,7 @@ class Screen : AppCompatActivity() {
         layoutToolBarWithNetwork = findViewById(R.id.layoutToolBarWithNetwork)
         layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
         checkNetworkConnection()
+        ensureNotificationPermission()
         createNotificationChannel()
 
         productList.addProduct(
@@ -36,7 +43,9 @@ class Screen : AppCompatActivity() {
             "AH",
             "Kaasblokjes",
             "01/01/2024"
-        )
+        ).setOnClickListener {
+            sendNotification(it as LinearLayout)
+        }
 
         productList.addProduct(
             "https://partyverhuren.nl/wp-content/uploads/2017/03/4400-foto-1.jpg",
@@ -108,7 +117,11 @@ class Screen : AppCompatActivity() {
         }
     }
 
-
+    private fun ensureNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+        }
+    }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -123,12 +136,15 @@ class Screen : AppCompatActivity() {
         }
     }
 
-    private fun sendNotification(){
-        val builder = NotificationCompat.Builder(this, Channel_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+    private fun sendNotification(product: LinearLayout) {
+        var product = this.productList.getProduct(product)
+        var pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, Intent(), PendingIntent.FLAG_IMMUTABLE)
+        var builder = NotificationCompat.Builder(this, Channel_ID)
+            .setSmallIcon(R.drawable.ifridge)
             .setContentTitle("Overdatum")
-            .setContentText("Het volgende product is bijna overdatum [eten]")
+            .setContentText("Het volgende product is bijna overdatum ${product?.productName}")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
 
         with(NotificationManagerCompat.from(this)){
             notify(Notification_ID, builder.build())

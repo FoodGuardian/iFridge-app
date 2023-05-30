@@ -26,7 +26,7 @@ class ProductList(private val context: AppCompatActivity) {
         }.start()
     }
 
-    fun addProduct(imageUrl: String, brandName: String, productName: String, expirationDate: String): LinearLayout? {
+    fun addProduct(imageUrl: String, brandName: String, productName: String, expirationDate: String): LinearLayout {
         var productList = this.context.findViewById<LinearLayout>(R.id.productList)
         var brandName = brandName
         var productName = productName
@@ -107,5 +107,9 @@ class ProductList(private val context: AppCompatActivity) {
     fun removeProduct(product: LinearLayout) {
         this.context.findViewById<LinearLayout>(R.id.productList).removeView(product)
         this.products.remove(product)
+    }
+
+    fun getProduct(product: LinearLayout): Product? {
+        return this.products[product]
     }
 }
