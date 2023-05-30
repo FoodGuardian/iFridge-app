@@ -21,6 +21,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import java.io.IOException
+import java.net.InetSocketAddress
+import java.net.Socket
 
 class Screen : AppCompatActivity() {
 
@@ -28,6 +31,7 @@ class Screen : AppCompatActivity() {
 
     private lateinit var layoutToolBarWithNetwork : ConstraintLayout
     private lateinit var layoutToolBarWithNoNetwork : ConstraintLayout
+
     private var productList = ProductList(this)
     private var Channel_ID = "Channel_ID_Test"
     private var Notification_ID = 1304382
@@ -163,4 +167,31 @@ class Screen : AppCompatActivity() {
             notify(Notification_ID, builder.build())
         }
     }
+
+//    private fun checkStatusChangeStatus() {
+//        Thread {
+//            val host = "192.168.137.162"
+//            val port = 3306
+//            var isReachable = false
+//
+//            try {
+//                val socket = Socket()
+//                socket.connect(InetSocketAddress(host, port), 5000)
+//                isReachable = true
+//                socket.close()
+//            } catch (e: IOException) {
+//                // Kan geen verbinding maken met de opgegeven host en poort
+//            }
+//
+//            runOnUiThread {
+//                if (isReachable) {
+//                    layoutOnline.visibility = View.VISIBLE
+//                    layoutOffline.visibility = View.GONE
+//                } else {
+//                    layoutOnline.visibility = View.GONE
+//                    layoutOffline.visibility = View.VISIBLE
+//                }
+//            }
+//        }.start()
+//    }
 }
