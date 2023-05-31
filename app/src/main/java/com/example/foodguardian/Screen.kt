@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
@@ -25,6 +26,8 @@ import java.net.InetSocketAddress
 import java.net.Socket
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import java.net.InetAddress
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 class Screen : AppCompatActivity() {
 
@@ -150,5 +153,22 @@ class Screen : AppCompatActivity() {
                 }
             }
         }.start()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun checkdate(){
+        val products = this.productList.products
+        val current = LocalDate.now()
+
+        for (product in products) {
+            val daysUntilExpiry = ChronoUnit.DAYS.between(current, current)
+            if (daysUntilExpiry < 3) {
+                sendNotification(product.key)
+            }
+        }
+    }
+
+
+
     }
 }

@@ -21,7 +21,7 @@ import java.net.URL
 class Product(var productCode: String, var brandName: String, var productName: String, var expirationDate: String)
 
 class ProductList(private val context: AppCompatActivity) {
-    private var products = mutableMapOf<LinearLayout, Product>()
+    var products = mutableMapOf<LinearLayout, Product>()
 
     fun syncProducts() {
         Thread {
