@@ -41,7 +41,7 @@ class Screen : AppCompatActivity() {
 
     private var productList = ProductList(this)
     private var Channel_ID = "Channel_ID_Test"
-    private var Notification_ID = 1304382
+    private var notifications = arrayListOf<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,9 +122,11 @@ class Screen : AppCompatActivity() {
             .setContentText("Het volgende product is bijna overdatum ${product?.productName}")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
-
+        val rnds = (0..10000).random()
+        this.notifications.add(rnds)
         with(NotificationManagerCompat.from(this)){
-            notify(Notification_ID, builder.build())
+
+            notify(rnds, builder.build())
         }
     }
 
