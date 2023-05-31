@@ -78,6 +78,12 @@ class Screen : AppCompatActivity() {
         refreshLayout.setOnRefreshListener {
             this.productList.syncProducts()
         }
+
+        Thread {
+            while (true) {
+                checkdate()
+            }
+        }
     }
 
     private fun checkNetworkConnection(){
@@ -157,20 +163,15 @@ class Screen : AppCompatActivity() {
         }.start()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun checkdate(){
+    private fun checkdate() {
         val products = this.productList.products
         val current = LocalDate.now()
 
         for (product in products) {
-            val daysUntilExpiry = ChronoUnit.DAYS.between(current, current)
+            val daysUntilExpiry = ChronoUnit.DAYS.between(current, product.value.expirationDate)
             if (daysUntilExpiry < 3) {
                 sendNotification(product.key)
             }
         }
-    }
-
-
-
     }
 }
