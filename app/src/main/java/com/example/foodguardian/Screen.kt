@@ -9,10 +9,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
@@ -33,6 +32,9 @@ class Screen : AppCompatActivity() {
 
     private lateinit var layoutToolBarWithNetwork : ConstraintLayout
     private lateinit var layoutToolBarWithNoNetwork : ConstraintLayout
+    private lateinit var layoutOnline : TextView
+    private lateinit var layoutOffline : TextView
+
 
     private var productList = ProductList(this)
     private var Channel_ID = "Channel_ID_Test"
@@ -43,9 +45,12 @@ class Screen : AppCompatActivity() {
         setContentView(R.layout.activity_scherm)
         layoutToolBarWithNetwork = findViewById(R.id.layoutToolBarWithNetwork)
         layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
+        layoutOnline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0).findViewById<TextView>(R.id.layoutOnline)
+        layoutOffline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0).findViewById<TextView>(R.id.layoutOffline)
         checkNetworkConnection()
         ensureNotificationPermission()
         createNotificationChannel()
+        checkStatusChangeStatus()
 
         this.productList.syncProducts()
 
@@ -63,6 +68,8 @@ class Screen : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+
+
 
         var refreshLayout = findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
         refreshLayout.setOnRefreshListener {
@@ -118,30 +125,30 @@ class Screen : AppCompatActivity() {
         }
     }
 
-//    private fun checkStatusChangeStatus() {
-//        Thread {
-//            val host = "192.168.137.162"
-//            val port = 3306
-//            var isReachable = false
-//
-//            try {
-//                val socket = Socket()
-//                socket.connect(InetSocketAddress(host, port), 5000)
-//                isReachable = true
-//                socket.close()
-//            } catch (e: IOException) {
-//                // Kan geen verbinding maken met de opgegeven host en poort
-//            }
-//
-//            runOnUiThread {
-//                if (isReachable) {
-//                    layoutOnline.visibility = View.VISIBLE
-//                    layoutOffline.visibility = View.GONE
-//                } else {
-//                    layoutOnline.visibility = View.GONE
-//                    layoutOffline.visibility = View.VISIBLE
-//                }
-//            }
-//        }.start()
-//    }
+    private fun checkStatusChangeStatus() {
+        Thread {
+            val host = "ifridge.local"
+            val port = 3306
+            var isReachable = false
+
+            try {
+                val socket = Socket()
+                socket.connect(InetSocketAddress(host, port), 5000)
+                isReachable = true
+                socket.close()
+            } catch (e: IOException) {
+                // Kan geen verbinding maken met de opgegeven host en poort
+            }
+
+            runOnUiThread {
+                if (isReachable) {
+                    layoutOnline.visibility = View.VISIBLE
+                    layoutOffline.visibility = View.GONE
+                } else {
+                    layoutOnline.visibility = View.GONE
+                    layoutOffline.visibility = View.VISIBLE
+                }
+            }
+        }.start()
+    }
 }

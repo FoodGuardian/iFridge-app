@@ -37,6 +37,7 @@
 
 
     <TextView
+        android:id="@+id/layoutOnline"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -44,7 +45,18 @@
         android:textColor="@color/colorGreen"
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@id/imageLogo"
-        app:layout_constraintTop_toBottomOf="@id/Supporter"/>
+        app:layout_constraintTop_toBottomOf="@id/Supporter" />
+
+    <TextView
+        android:id="@+id/layoutOffline"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/offline"
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@id/imageLogo"
+        app:layout_constraintTop_toBottomOf="@id/Supporter" />
 
 
 
