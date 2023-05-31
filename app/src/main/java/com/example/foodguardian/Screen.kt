@@ -31,12 +31,12 @@ import java.time.temporal.ChronoUnit
 
 class Screen : AppCompatActivity() {
 
-    private lateinit var cld : ConnectionCheck
+    private lateinit var cld: ConnectionCheck
 
-    private lateinit var layoutToolBarWithNetwork : ConstraintLayout
-    private lateinit var layoutToolBarWithNoNetwork : ConstraintLayout
-    private lateinit var layoutOnline : TextView
-    private lateinit var layoutOffline : TextView
+    private lateinit var layoutToolBarWithNetwork: ConstraintLayout
+    private lateinit var layoutToolBarWithNoNetwork: ConstraintLayout
+    private lateinit var layoutOnline: TextView
+    private lateinit var layoutOffline: TextView
 
 
     private var productList = ProductList(this)
@@ -48,8 +48,10 @@ class Screen : AppCompatActivity() {
         setContentView(R.layout.activity_scherm)
         layoutToolBarWithNetwork = findViewById(R.id.layoutToolBarWithNetwork)
         layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
-        layoutOnline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0).findViewById<TextView>(R.id.layoutOnline)
-        layoutOffline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0).findViewById<TextView>(R.id.layoutOffline)
+        layoutOnline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
+            .findViewById<TextView>(R.id.layoutOnline)
+        layoutOffline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
+            .findViewById<TextView>(R.id.layoutOffline)
         checkNetworkConnection()
         ensureNotificationPermission()
         createNotificationChannel()
@@ -65,6 +67,7 @@ class Screen : AppCompatActivity() {
             when (it.itemId) {
                 R.id.menuProductList -> {
                 }
+
                 R.id.menuSettings -> {
                 }
             }
@@ -73,14 +76,13 @@ class Screen : AppCompatActivity() {
         }
 
 
-
         var refreshLayout = findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
         refreshLayout.setOnRefreshListener {
             this.productList.syncProducts()
         }
     }
 
-    private fun checkNetworkConnection(){
+    private fun checkNetworkConnection() {
         cld = ConnectionCheck(application)
 
         cld.observe(this) { isConnected ->
@@ -95,7 +97,11 @@ class Screen : AppCompatActivity() {
     }
 
     private fun ensureNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
     }
@@ -108,14 +114,16 @@ class Screen : AppCompatActivity() {
             val channel = NotificationChannel(Channel_ID, name, importance).apply {
                 description = descriptionText
             }
-            val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
 
     private fun sendNotification(product: LinearLayout) {
         var product = this.productList.getProduct(product)
-        var pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, Intent(), PendingIntent.FLAG_IMMUTABLE)
+        var pendingIntent: PendingIntent =
+            PendingIntent.getActivity(this, 0, Intent(), PendingIntent.FLAG_IMMUTABLE)
         var builder = NotificationCompat.Builder(this, Channel_ID)
             .setSmallIcon(R.drawable.ifridge)
             .setContentTitle("Overdatum")
@@ -124,8 +132,7 @@ class Screen : AppCompatActivity() {
             .setContentIntent(pendingIntent)
         val rnds = (0..10000).random()
         this.notifications.add(rnds)
-        with(NotificationManagerCompat.from(this)){
-
+        with(NotificationManagerCompat.from(this)) {
             notify(rnds, builder.build())
         }
     }
@@ -158,7 +165,7 @@ class Screen : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun checkdate(){
+    private fun checkdate() {
         val products = this.productList.products
         val current = LocalDate.now()
 
@@ -168,9 +175,5 @@ class Screen : AppCompatActivity() {
                 sendNotification(product.key)
             }
         }
-    }
-
-
-
     }
 }
