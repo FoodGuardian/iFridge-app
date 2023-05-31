@@ -27,6 +27,7 @@ import java.net.Socket
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import java.net.InetAddress
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 class Screen : AppCompatActivity() {
@@ -124,12 +125,13 @@ class Screen : AppCompatActivity() {
 
     private fun sendNotification(product: LinearLayout) {
         var product = this.productList.getProduct(product)
+        var date = product?.expirationDate?.format(DateTimeFormatter.ofPattern("dd/MM/uuuu"))
         var pendingIntent: PendingIntent =
             PendingIntent.getActivity(this, 0, Intent(), PendingIntent.FLAG_IMMUTABLE)
         var builder = NotificationCompat.Builder(this, Channel_ID)
             .setSmallIcon(R.drawable.ifridge)
-            .setContentTitle("Overdatum")
-            .setContentText("Het volgende product is bijna overdatum ${product?.productName}")
+            .setContentTitle("Houdbaarheid ${product?.productName}")
+            .setContentText("Het volgende product is bijna overdatum: ${product?.productName} de houdbaarheidsdatum is ${date}")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
         val rnds = (0..10000).random()
