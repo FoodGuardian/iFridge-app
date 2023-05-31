@@ -182,7 +182,7 @@ class Screen : AppCompatActivity() {
                     }
                 }
             }
-        }
+        }.start()
     }
 }
 
