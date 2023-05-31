@@ -79,11 +79,7 @@ class Screen : AppCompatActivity() {
             this.productList.syncProducts()
         }
 
-        Thread {
-            while (true) {
-                checkdate()
-            }
-        }
+        dateChecker()
     }
 
     private fun checkNetworkConnection(){
@@ -163,15 +159,21 @@ class Screen : AppCompatActivity() {
         }.start()
     }
 
-    private fun checkdate() {
-        val products = this.productList.products
-        val current = LocalDate.now()
-
-        for (product in products) {
-            val daysUntilExpiry = ChronoUnit.DAYS.between(current, product.value.expirationDate)
-            if (daysUntilExpiry < 3) {
-                sendNotification(product.key)
+    private fun dateChecker() {
+        Thread {
+            while (true) {
+                val products = this.productList.products.toMutableMap()
+                val current = LocalDate.now()
+                for (product in products) {
+                    if (!product.value.hasNotified) {
+                        val daysUntilExpiry = ChronoUnit.DAYS.between(current, product.value.expirationDate)
+                        if (daysUntilExpiry < 3) {
+                            this.productList.getProduct(product.key)?.hasNotified = true
+                            sendNotification(product.key)
+                        }
+                    }
+                }
             }
-        }
+        }.start()
     }
 }

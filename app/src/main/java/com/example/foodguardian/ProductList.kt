@@ -18,9 +18,10 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
-class Product(var productCode: String, var brandName: String, var productName: String, var expirationDate: LocalDate)
+class Product(var productCode: String, var brandName: String, var productName: String, var expirationDate: LocalDate, var hasNotified: Boolean = false)
 
 class ProductList(private val context: AppCompatActivity) {
     var products = mutableMapOf<LinearLayout, Product>()
@@ -114,7 +115,8 @@ class ProductList(private val context: AppCompatActivity) {
         linearLayout2.addView(textView2)
         var textView3 = TextView(this.context)
         textView3.layoutParams = params5
-        var expiration = "Houdbaar tot: $expirationDate"
+        var format = DateTimeFormatter.ofPattern("dd/MM/uuuu")
+        var expiration = "Houdbaar tot: ${expirationDate.format(format)}"
         textView3.text = expiration
         textView3.isSingleLine = true
         textView3.ellipsize = TextUtils.TruncateAt.END
