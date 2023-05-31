@@ -17,8 +17,10 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.time.LocalDate
+import java.util.Calendar
 
-class Product(var productCode: String, var brandName: String, var productName: String, var expirationDate: String)
+class Product(var productCode: String, var brandName: String, var productName: String, var expirationDate: LocalDate)
 
 class ProductList(private val context: AppCompatActivity) {
     var products = mutableMapOf<LinearLayout, Product>()
@@ -48,7 +50,9 @@ class ProductList(private val context: AppCompatActivity) {
                 this.context.runOnUiThread {
                     for (i in 0 until products.length()) {
                         var product = products[i] as JSONObject
-                        this.addProduct(product.getString("productId"), product.getString("brandName"), product.getString("productName"), product.getString("expirationDate"))
+                        var expiration = product.getJSONObject("expiration")
+                        var expirationDate = LocalDate.of(expiration.getInt("year"), expiration.getInt("month"), expiration.getInt("day"))
+                        this.addProduct(product.getString("productId"), product.getString("brandName"), product.getString("productName"), expirationDate)
                     }
                     refreshLayout.isRefreshing = false
                 }
@@ -56,7 +60,7 @@ class ProductList(private val context: AppCompatActivity) {
         }.start()
     }
 
-    private fun addProduct(productCode: String, brandName: String, productName: String, expirationDate: String): LinearLayout {
+    private fun addProduct(productCode: String, brandName: String, productName: String, expirationDate: LocalDate): LinearLayout {
         var productList = this.context.findViewById<LinearLayout>(R.id.productList)
         var linearLayout = LinearLayout(this.context)
         var params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400)
