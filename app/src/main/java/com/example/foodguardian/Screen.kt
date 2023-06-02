@@ -1,6 +1,7 @@
 package com.example.foodguardian
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -12,7 +13,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
@@ -20,12 +20,11 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.navigation.NavigationView
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import java.net.InetAddress
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -44,6 +43,7 @@ class Screen : AppCompatActivity() {
     private var Channel_ID = "Channel_ID_Test"
     private var notifications = arrayListOf<Int>()
 
+    @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scherm)
@@ -60,7 +60,7 @@ class Screen : AppCompatActivity() {
 
         this.productList.syncProducts()
 
-        var drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         findViewById<View>(R.id.imageMenudropdown).setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
@@ -77,7 +77,7 @@ class Screen : AppCompatActivity() {
         }
 
 
-        var refreshLayout = findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
+        val refreshLayout = findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
         refreshLayout.setOnRefreshListener {
             this.productList.syncProducts()
         }
@@ -124,11 +124,11 @@ class Screen : AppCompatActivity() {
     }
 
     private fun sendNotification(product: LinearLayout) {
-        var product = this.productList.getProduct(product)
-        var date = product?.expirationDate?.format(DateTimeFormatter.ofPattern("dd/MM/uuuu"))
-        var pendingIntent: PendingIntent =
+        val product = this.productList.getProduct(product)
+        val date = product?.expirationDate?.format(DateTimeFormatter.ofPattern("dd/MM/uuuu"))
+        val pendingIntent: PendingIntent =
             PendingIntent.getActivity(this, 0, Intent(), PendingIntent.FLAG_IMMUTABLE)
-        var builder = NotificationCompat.Builder(this, Channel_ID)
+        val builder = NotificationCompat.Builder(this, Channel_ID)
             .setSmallIcon(R.drawable.ifridge)
             .setContentTitle("Houdbaarheid ${product?.productName}")
             .setContentText("Het volgende product is bijna overdatum: ${product?.productName} de houdbaarheidsdatum is ${date}")
