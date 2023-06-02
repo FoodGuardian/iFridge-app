@@ -23,13 +23,13 @@ import java.util.Calendar
 
 class Product(var productCode: String, var brandName: String, var productName: String, var expirationDate: LocalDate, var hasNotified: Boolean = false)
 
-class ProductList(private val context: AppCompatActivity) {
+class ProductList(private val context: Screen) {
     var products = mutableMapOf<LinearLayout, Product>()
 
     fun syncProducts() {
         Thread {
+            val refreshLayout = this.context.findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
             try {
-                val refreshLayout = this.context.findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
                 this.context.runOnUiThread {
                     refreshLayout.isRefreshing = true
                 }
@@ -57,7 +57,9 @@ class ProductList(private val context: AppCompatActivity) {
                     }
                     refreshLayout.isRefreshing = false
                 }
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+                refreshLayout.isRefreshing = false
+            }
         }.start()
     }
 

@@ -10,4 +10,5 @@
     <string name="Foodguardian">Foodguardian</string>
     <string name="offline">Offline</string>
     <string name="nowifi">Nowifi</string>
+    <string name="geen_verbinding_met_de_koelkast_module">Geen verbinding met de koelkast module</string>
 </resources>

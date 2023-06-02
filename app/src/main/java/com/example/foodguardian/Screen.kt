@@ -34,14 +34,15 @@ class Screen : AppCompatActivity() {
     private lateinit var cld: ConnectionCheck
 
     private lateinit var layoutToolBarWithNetwork: ConstraintLayout
+    private lateinit var layoutToolBarWithNoConnectionWithModule : ConstraintLayout
     private lateinit var layoutToolBarWithNoNetwork: ConstraintLayout
     private lateinit var layoutOnline: TextView
     private lateinit var layoutOffline: TextView
 
-
     private var productList = ProductList(this)
     private var Channel_ID = "Channel_ID_Test"
     private var notifications = arrayListOf<Int>()
+    var isReachable = false
 
     @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +50,7 @@ class Screen : AppCompatActivity() {
         setContentView(R.layout.activity_scherm)
         layoutToolBarWithNetwork = findViewById(R.id.layoutToolBarWithNetwork)
         layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
+        layoutToolBarWithNoConnectionWithModule = findViewById(R.id.layoutToolBarWithNoConnectionWithModule)
         layoutOnline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
             .findViewById<TextView>(R.id.layoutOnline)
         layoutOffline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
@@ -57,8 +59,6 @@ class Screen : AppCompatActivity() {
         ensureNotificationPermission()
         createNotificationChannel()
         checkStatusChangeStatus()
-
-        this.productList.syncProducts()
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         findViewById<View>(R.id.imageMenudropdown).setOnClickListener {
@@ -75,7 +75,6 @@ class Screen : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
-
 
         val refreshLayout = findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
         refreshLayout.setOnRefreshListener {
@@ -145,7 +144,7 @@ class Screen : AppCompatActivity() {
         Thread {
             val host = "ifridge.local"
             val port = 3306
-            var isReachable = false
+            this.isReachable = false
 
             try {
                 val socket = Socket()
@@ -158,11 +157,15 @@ class Screen : AppCompatActivity() {
 
             runOnUiThread {
                 if (isReachable) {
+                    this.productList.syncProducts()
                     layoutOnline.visibility = View.VISIBLE
                     layoutOffline.visibility = View.GONE
+                    layoutToolBarWithNoConnectionWithModule.visibility = View.GONE
                 } else {
                     layoutOnline.visibility = View.GONE
                     layoutOffline.visibility = View.VISIBLE
+                    layoutToolBarWithNoConnectionWithModule.visibility = View.VISIBLE
+
                 }
             }
         }.start()
@@ -186,6 +189,7 @@ class Screen : AppCompatActivity() {
             }
         }.start()
     }
+
 }
 
 
