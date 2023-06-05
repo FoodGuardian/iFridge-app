@@ -94,6 +94,7 @@ class Screen : AppCompatActivity() {
             } else {
                 layoutToolBarWithNetwork.visibility = View.GONE
                 layoutToolBarWithNoNetwork.visibility = View.VISIBLE
+                layoutToolBarWithNoConnectionWithModule.visibility = View.GONE
             }
         }
     }
@@ -144,20 +145,21 @@ class Screen : AppCompatActivity() {
         Thread {
             val host = "ifridge.local"
             val port = 3306
-            this.isReachable = false
-
+            runOnUiThread {
+                findViewById<SwipeRefreshLayout>(R.id.refreshLayout).isRefreshing = true
+            }
             try {
                 val socket = Socket()
                 socket.connect(InetSocketAddress(host, port), 5000)
-                isReachable = true
+                this.isReachable = true
                 socket.close()
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 // Kan geen verbinding maken met de opgegeven host en poort
+                this.isReachable = false
             }
-
+            this.productList.syncProducts()
             runOnUiThread {
-                if (isReachable) {
-                    this.productList.syncProducts()
+                if (this.isReachable) {
                     layoutOnline.visibility = View.VISIBLE
                     layoutOffline.visibility = View.GONE
                     layoutToolBarWithNoConnectionWithModule.visibility = View.GONE
@@ -165,7 +167,6 @@ class Screen : AppCompatActivity() {
                     layoutOnline.visibility = View.GONE
                     layoutOffline.visibility = View.VISIBLE
                     layoutToolBarWithNoConnectionWithModule.visibility = View.VISIBLE
-
                 }
             }
         }.start()
@@ -174,22 +175,29 @@ class Screen : AppCompatActivity() {
     private fun dateChecker() {
         Thread {
             while (true) {
-                val products = this.productList.products.toMutableMap()
+                var products: MutableMap<LinearLayout, Product>? = null
+                while (products == null) {
+                    try {
+                        products = this.productList.products.toMutableMap()
+                        break
+                    } catch (_: Exception) {}
+                }
                 val current = LocalDate.now()
-                for (product in products) {
-                    if (!product.value.hasNotified) {
-                        val daysUntilExpiry =
-                            ChronoUnit.DAYS.between(current, product.value.expirationDate)
-                        if (daysUntilExpiry < 3) {
-                            this.productList.getProduct(product.key)?.hasNotified = true
-                            sendNotification(product.key)
+                if (products != null) {
+                    for (product in products) {
+                        if (!product.value.hasNotified) {
+                            val daysUntilExpiry =
+                                ChronoUnit.DAYS.between(current, product.value.expirationDate)
+                            if (daysUntilExpiry < 3) {
+                                this.productList.getProduct(product.key)?.hasNotified = true
+                                sendNotification(product.key)
+                            }
                         }
                     }
                 }
             }
         }.start()
     }
-
 }
 
 

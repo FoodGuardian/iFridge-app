@@ -53,18 +53,20 @@ class ProductList(private val context: Screen) {
                         val product = products[i] as JSONObject
                         val expiration = product.getJSONObject("expiration")
                         val expirationDate = LocalDate.of(expiration.getInt("year"), expiration.getInt("month"), expiration.getInt("day"))
-                        this.addProduct(product.getString("productId"), product.getString("brandName"), product.getString("productName"), expirationDate)
+                        this.addProduct(product.getString("productCode"), product.getString("brandName"), product.getString("productName"), expirationDate)
                     }
                     refreshLayout.isRefreshing = false
                 }
             } catch (_: Exception) {
-                refreshLayout.isRefreshing = false
+                this.context.runOnUiThread {
+                    refreshLayout.isRefreshing = false
+                }
             }
         }.start()
     }
 
     private fun addProduct(productCode: String, brandName: String, productName: String, expirationDate: LocalDate): LinearLayout {
-        val productList = this.context.findViewById<LinearLayout>(R.id.productList)
+        var productList = this.context.findViewById<LinearLayout>(R.id.productList)
         val linearLayout = LinearLayout(this.context)
         val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400)
         params.bottomMargin = 40
@@ -79,7 +81,7 @@ class ProductList(private val context: Screen) {
         constraintLayout.setPadding(40)
         constraintLayout.id = View.generateViewId()
         linearLayout.addView(constraintLayout)
-        val imageView = ImageView(this.context)
+        var imageView = ImageView(this.context)
         val params3 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1.0f)
         imageView.layoutParams = params3
         imageView.id = View.generateViewId()
@@ -128,20 +130,21 @@ class ProductList(private val context: Screen) {
         linearLayout2.addView(textView3)
         Thread {
             try {
-                val connection = URL("https://world.openfoodfacts.org/api/v0/product/$productCode.json").openConnection()
+                var connection = URL("https://world.openfoodfacts.org/api/v0/product/$productCode.json").openConnection()
                 connection.doOutput = true
+                connection.connectTimeout = 5000
                 connection.connect()
-                val streamReader = InputStreamReader(connection.inputStream)
-                val bufferReader = BufferedReader(streamReader)
-                val info = JSONObject(bufferReader.readText())
+                var streamReader = InputStreamReader(connection.inputStream)
+                var bufferReader = BufferedReader(streamReader)
+                var info = JSONObject(bufferReader.readText())
                 bufferReader.close()
                 streamReader.close()
-                val stream = URL(info.getJSONObject("product").getString("image_url")).openStream()
-                val bitmap = BitmapFactory.decodeStream(stream)
+                var stream = URL(info.getJSONObject("product").getString("image_url")).openStream()
+                var bitmap = BitmapFactory.decodeStream(stream)
                 this.context.runOnUiThread {
                     imageView.setImageBitmap(bitmap)
                 }
-            } catch (_: Exception) {}
+            } catch (exc: Exception) {}
         }.start()
         this.products[linearLayout] = Product(productCode, brandName, productName, expirationDate)
         return linearLayout
