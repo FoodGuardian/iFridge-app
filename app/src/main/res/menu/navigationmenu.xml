@@ -12,5 +12,10 @@
         </menu>
     </item>
 
+    <item android:id="@+id/song"
+        android:icon="@drawable/ifridge"
+        android:title="Credits"
+        />
+
 
 </menu>

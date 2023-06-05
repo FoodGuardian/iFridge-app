@@ -36,6 +36,7 @@ class Screen : AppCompatActivity() {
     private lateinit var layoutToolBarWithNetwork: ConstraintLayout
     private lateinit var layoutToolBarWithNoConnectionWithModule : ConstraintLayout
     private lateinit var layoutToolBarWithNoNetwork: ConstraintLayout
+    private lateinit var layoutCredits : ConstraintLayout
     private lateinit var layoutOnline: TextView
     private lateinit var layoutOffline: TextView
 
@@ -50,6 +51,7 @@ class Screen : AppCompatActivity() {
         setContentView(R.layout.activity_scherm)
         layoutToolBarWithNetwork = findViewById(R.id.layoutToolBarWithNetwork)
         layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
+        layoutCredits = findViewById(R.id.layoutCredits)
         layoutToolBarWithNoConnectionWithModule = findViewById(R.id.layoutToolBarWithNoConnectionWithModule)
         layoutOnline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
             .findViewById<TextView>(R.id.layoutOnline)
@@ -70,7 +72,10 @@ class Screen : AppCompatActivity() {
                 }
 
                 R.id.menuSettings -> {
+                    val intent = Intent(this, R.xml.settings_page::class.java)
+                    startActivity(intent)
                 }
+
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true
