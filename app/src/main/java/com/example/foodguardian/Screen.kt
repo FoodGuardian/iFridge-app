@@ -139,6 +139,8 @@ class Screen : AppCompatActivity() {
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+            requestPermissions(arrayOf(Manifest.permission.WRITE_CALENDAR),1)
+            requestPermissions(arrayOf(Manifest.permission.READ_CALENDAR),1)
         }
     }
 
