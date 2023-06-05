@@ -34,7 +34,7 @@
 
             <TextView
                 android:id="@+id/textTitle"
-                android:layout_width="match_parent"
+                android:layout_width="298dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:text="@string/app_name"
@@ -43,17 +43,22 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="@id/layoutToolBarWithNetwork"
             app:layout_constraintEnd_toEndOf="@id/layoutToolBarWithNetwork"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@id/layoutToolBarWithNetwork"
-            app:layout_constraintTop_toBottomOf="@id/header">
+            app:layout_constraintTop_toBottomOf="@id/header"
+            app:layout_constraintVertical_bias="0.0">
+
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
                 <LinearLayout
                     android:id="@+id/productList"
                     android:layout_width="match_parent"
@@ -61,8 +66,7 @@
                     android:orientation="vertical"
                     android:paddingLeft="20dp"
                     android:paddingTop="20dp"
-                    android:paddingRight="20dp">
-                </LinearLayout>
+                    android:paddingRight="20dp"></LinearLayout>
             </ScrollView>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

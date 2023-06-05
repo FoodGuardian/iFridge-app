@@ -70,7 +70,10 @@ class Screen : AppCompatActivity() {
                 }
 
                 R.id.menuSettings -> {
+                    val intent = Intent(this, R.xml.settings_page::class.java)
+                    startActivity(intent)
                 }
+
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true
