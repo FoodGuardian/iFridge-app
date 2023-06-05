@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -28,6 +27,7 @@ import java.net.Socket
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+
 
 class Screen : AppCompatActivity() {
 
@@ -69,10 +69,12 @@ class Screen : AppCompatActivity() {
         findViewById<NavigationView>(R.id.navigationView).setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.menuProductList -> {
+                    val intent = Intent(this, this.productList::class.java)
+                    startActivity(intent)
                 }
 
                 R.id.menuSettings -> {
-                    val intent = Intent(this, R.xml.settings_page::class.java)
+                    val intent = Intent(this, this.productList::class.java)
                     startActivity(intent)
                 }
 
@@ -122,7 +124,7 @@ class Screen : AppCompatActivity() {
                 description = descriptionText
             }
             val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
