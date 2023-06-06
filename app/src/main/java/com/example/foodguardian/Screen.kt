@@ -2,9 +2,12 @@ package com.example.foodguardian
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -27,6 +30,7 @@ import java.net.Socket
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Calendar
 
 
 class Screen : AppCompatActivity() {
@@ -39,7 +43,8 @@ class Screen : AppCompatActivity() {
     private lateinit var layoutCredits : ConstraintLayout
     private lateinit var layoutOnline: TextView
     private lateinit var layoutOffline: TextView
-
+    private lateinit var alarmManager: AlarmManager
+    private lateinit var pendingIntent: PendingIntent
     private var productList = ProductList(this)
     private var Channel_ID = "Channel_ID_Test"
     private var notifications = arrayListOf<Int>()
@@ -87,6 +92,27 @@ class Screen : AppCompatActivity() {
         refreshLayout.setOnRefreshListener {
             this.productList.syncProducts()
         }
+        alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmClass = AlarmReceiver(this)
+        val intent = Intent(this, alarmClass::class.java)
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.timeInMillis = System.currentTimeMillis()
+        calendar.set(Calendar.HOUR_OF_DAY, 11)
+        calendar.set(Calendar.MINUTE, 13)
+        calendar.set(Calendar.SECOND, 0)
+
+        if (calendar.timeInMillis < System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
+        }
+
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent
+        )
 
         dateChecker()
     }
@@ -113,6 +139,8 @@ class Screen : AppCompatActivity() {
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+            requestPermissions(arrayOf(Manifest.permission.WRITE_CALENDAR),1)
+            requestPermissions(arrayOf(Manifest.permission.READ_CALENDAR),1)
         }
     }
 
@@ -121,6 +149,7 @@ class Screen : AppCompatActivity() {
             val name = "Eten is bijna overdatum"
             val descriptionText = "Het volgende product is bijna overdatum [Eten]"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val alarmReceiver = AlarmReceiver(this)
             val channel = NotificationChannel(Channel_ID, name, importance).apply {
                 description = descriptionText
             }
@@ -204,6 +233,14 @@ class Screen : AppCompatActivity() {
                 }
             }
         }.start()
+    }
+    class AlarmReceiver(screen: Screen) : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val screen = context as Screen
+            val productLayout: LinearLayout =
+                intent.getSerializableExtra("productLayout") as LinearLayout
+            screen.sendNotification(productLayout)
+        }
     }
 }
 
