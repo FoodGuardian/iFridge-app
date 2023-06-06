@@ -66,22 +66,22 @@ class Screen : AppCompatActivity() {
         findViewById<View>(R.id.imageMenudropdown).setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
-        findViewById<NavigationView>(R.id.navigationView).setNavigationItemSelectedListener {
-            when (it.itemId) {
+        findViewById<NavigationView>(R.id.navigationView).setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
                 R.id.menuProductList -> {
-                    val intent = Intent(this, this.productList::class.java)
+                    val intent = Intent(this@Screen, Screen::class.java)
                     startActivity(intent)
                 }
 
                 R.id.menuSettings -> {
-                    val intent = Intent(this, this.productList::class.java)
+                    val intent = Intent(this@Screen, Screen::class.java)
                     startActivity(intent)
                 }
-
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+
 
         val refreshLayout = findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
         refreshLayout.setOnRefreshListener {
