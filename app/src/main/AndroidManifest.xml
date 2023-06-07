@@ -37,6 +37,7 @@
             android:name=".Settings"
                 android:label="Instellingen"/>
 
+
     </application>
 
 </manifest>

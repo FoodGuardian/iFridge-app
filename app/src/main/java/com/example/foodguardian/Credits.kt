@@ -1,3 +1,5 @@
+package com.example.foodguardian
+
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.foodguardian.R
