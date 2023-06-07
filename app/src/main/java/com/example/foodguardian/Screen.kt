@@ -88,7 +88,7 @@ class Screen : AppCompatActivity() {
                 }
 
                 R.id.menuCredits -> {
-                    val intent = Intent(this@Screen, Screen::class.java)
+                    val intent = Intent(this@Screen, Credits::class.java)
                     startActivity(intent)
                 }
             }
