@@ -38,6 +38,11 @@
                 android:label="Instellingen"/>
 
 
+        <activity
+            android:name=".Credits"
+                android:label="credits"/>
+
+
     </application>
 
 </manifest>
