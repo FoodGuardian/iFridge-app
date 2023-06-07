@@ -63,7 +63,11 @@ class Screen : AppCompatActivity() {
         layoutOffline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
             .findViewById<TextView>(R.id.layoutOffline)
         checkNetworkConnection()
-        ensureNotificationPermission()
+        var preferences = getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
+        if (preferences.getBoolean("firstrun", true)) {
+            ensurePermissions()
+            preferences.edit().putBoolean("firstrun", false).apply()
+        }
         createNotificationChannel()
         checkStatusChangeStatus()
 
@@ -79,7 +83,7 @@ class Screen : AppCompatActivity() {
                 }
 
                 R.id.menuSettings -> {
-                    val intent = Intent(this@Screen, Screen::class.java)
+                    val intent = Intent(this@Screen, Settings::class.java)
                     startActivity(intent)
                 }
 
@@ -137,16 +141,20 @@ class Screen : AppCompatActivity() {
         }
     }
 
-    private fun ensureNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+    private fun ensurePermissions() {
+        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
-            requestPermissions(arrayOf(Manifest.permission.WRITE_CALENDAR),1)
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.WRITE_CALENDAR), 1)
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.READ_CALENDAR),1)
         }
+    }
+
+    fun hasPermissions(): Boolean {
+        return (Build.VERSION.SDK_INT < 33 || ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun createNotificationChannel() {
