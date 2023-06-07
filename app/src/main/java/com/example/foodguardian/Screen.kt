@@ -79,7 +79,7 @@ class Screen : AppCompatActivity() {
                 }
 
                 R.id.menuSettings -> {
-                    val intent = Intent(this@Screen, Screen::class.java)
+                    val intent = Intent(this@Screen, Settings::class.java)
                     startActivity(intent)
                 }
             }
