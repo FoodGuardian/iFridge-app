@@ -12,7 +12,7 @@
         </menu>
     </item>
 
-    <item android:id="@+id/song"
+    <item android:id="@+id/menuCredits"
         android:icon="@drawable/ifridge"
         android:title="Credits"
         />

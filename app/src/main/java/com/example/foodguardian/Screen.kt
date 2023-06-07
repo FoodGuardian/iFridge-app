@@ -82,6 +82,11 @@ class Screen : AppCompatActivity() {
                     val intent = Intent(this@Screen, Screen::class.java)
                     startActivity(intent)
                 }
+
+                R.id.menuCredits -> {
+                    val intent = Intent(this@Screen, Screen::class.java)
+                    startActivity(intent)
+                }
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true
