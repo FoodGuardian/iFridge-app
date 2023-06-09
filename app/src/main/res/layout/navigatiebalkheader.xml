@@ -28,12 +28,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="@string/ifrigde"
+        android:text="@string/ifridge"
         android:textColor="@color/colorPrimaryText"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/Supporter"
-        app:layout_constraintStart_toEndOf="@id/imageLogo"/>
+        app:layout_constraintStart_toEndOf="@id/imageLogo" />
 
 
     <TextView

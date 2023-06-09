@@ -37,7 +37,7 @@
                 android:layout_width="298dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:text="@string/iFridge"
+                android:text="@string/ifridge"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -66,9 +66,94 @@
                     android:orientation="vertical"
                     android:paddingLeft="20dp"
                     android:paddingTop="20dp"
-                    android:paddingRight="20dp"></LinearLayout>
+                    android:paddingRight="20dp">
+
+                </LinearLayout>
             </ScrollView>
+
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/productLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/layoutToolBarWithNetwork"
+            app:layout_constraintEnd_toEndOf="@id/layoutToolBarWithNetwork"
+            app:layout_constraintStart_toStartOf="@id/layoutToolBarWithNetwork"
+            app:layout_constraintTop_toBottomOf="@id/header">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/productView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp">
+
+                    <!--                    <LinearLayout-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="match_parent"-->
+                    <!--                        android:orientation="horizontal"-->
+                    <!--                        android:padding="40px">-->
+
+                    <!--                        <ImageView-->
+                    <!--                            android:layout_width="400px"-->
+                    <!--                            android:layout_height="400px"-->
+                    <!--                            android:src="@drawable/beunhaas"></ImageView>-->
+
+                    <!--                        <LinearLayout-->
+                    <!--                            android:layout_width="wrap_content"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_gravity="center_vertical"-->
+                    <!--                            android:orientation="vertical">-->
+
+                    <!--                            <TextView-->
+                    <!--                                android:layout_width="match_parent"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:text="Hello"-->
+                    <!--                                android:textSize="16dp"></TextView>-->
+
+                    <!--                            <TextView-->
+                    <!--                                android:layout_width="match_parent"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:text="Hello"-->
+                    <!--                                android:textSize="20dp"></TextView>-->
+
+                    <!--                            <TextView-->
+                    <!--                                android:layout_width="match_parent"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:text="Houdbaar tot: 01/01/2024"-->
+                    <!--                                android:textSize="14dp"></TextView>-->
+                    <!--                        </LinearLayout>-->
+
+                    <!--                    </LinearLayout>-->
+
+                    <!--                    <Button-->
+                    <!--                        android:id="@+id/button"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:backgroundTint="@color/colorPrimary"-->
+                    <!--                        android:text="Genereer recept" />-->
+
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/textView2"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:paddingTop="20px"-->
+                    <!--                        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc placerat nisi diam, non congue risus blandit at. Morbi consectetur vulputate turpis at cursus. Donec sollicitudin ultrices nisl vel convallis. Praesent arcu dolor, commodo ut leo interdum, sodales dictum magna. In porta et urna quis consequat. Nulla tempus lectus et turpis faucibus hendrerit. Quisque ultricies, ante ac pharetra tempor, enim orci vestibulum neque, vitae lacinia nunc urna vitae felis.  Sed volutpat diam turpis, id fermentum nisl consequat ac. Nullam fringilla scelerisque ex, non lobortis neque porta eu. Mauris vitae posuere risus, sit amet interdum leo. Vestibulum sed dolor in leo dictum malesuada vel id sapien. Nunc at urna quis magna ultricies egestas ut a quam. In quis ex sed eros ultrices pulvinar quis id libero. Duis tincidunt justo eu nulla semper bibendum. Nullam ut dapibus est. Nunc eu libero nec lacus tincidunt commodo vel vitae nisl. Quisque sed nisi tortor. Nulla at enim ac ante bibendum aliquet. Mauris tincidunt eros a mauris ullamcorper, nec dignissim augue tristique. Sed maximus, quam quis egestas pulvinar, urna nisi lobortis enim, facilisis mattis urna lectus nec augue. Sed et tellus a diam tempus vehicula in eget sapien. Suspendisse condimentum tellus sed tristique consequat.  Mauris facilisis est id massa tincidunt, ac cursus erat condimentum. Maecenas id augue tristique, lobortis mi id, tempus lorem. Nunc eu blandit libero. Duis vitae scelerisque ante, vitae commodo dui. Proin interdum elementum eleifend. Quisque volutpat condimentum tellus, sed fringilla diam. Donec molestie ligula eget ex varius blandit. Maecenas luctus sodales augue in ultrices. Fusce at lorem nec leo ultrices sollicitudin malesuada rhoncus eros. Suspendisse gravida urna eu eleifend tempus. Sed ac molestie nulla. Duis id maximus mauris. Maecenas ut libero vitae lacus laoreet interdum sed eget libero." />-->
+
+                </LinearLayout>
+            </ScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

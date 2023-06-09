@@ -1,22 +1,33 @@
 package com.example.foodguardian
 
+import android.content.res.ColorStateList
 import android.graphics.BitmapFactory
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
+import android.graphics.ColorFilter
+import android.opengl.Visibility
 import android.text.TextUtils
+import android.view.Gravity
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.marginTop
 import androidx.core.view.setPadding
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLEncoder
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -146,6 +157,112 @@ class ProductList(private val context: Screen) {
                 }
             } catch (exc: Exception) {}
         }.start()
+        linearLayout.setOnClickListener {
+            this.context.findViewById<ConstraintLayout>(R.id.productLayout).visibility = View.VISIBLE
+            productList.visibility = View.GONE
+            var productView = this.context.findViewById<LinearLayout>(R.id.productView)
+            var linearLayout3 = LinearLayout(this.context)
+            var params6 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
+            linearLayout3.layoutParams = params6
+            linearLayout3.orientation = LinearLayout.HORIZONTAL
+            linearLayout3.setPadding(40)
+            linearLayout3.id = View.generateViewId()
+            productView.addView(linearLayout3)
+            var imageView2 = ImageView(this.context)
+            var params7 = LinearLayout.LayoutParams(400, 400)
+            imageView2.layoutParams = params7
+            imageView2.setImageDrawable(imageView.drawable)
+            imageView2.id = View.generateViewId()
+            linearLayout3.addView(imageView2)
+            var linearLayout4 = LinearLayout(this.context)
+            var params8 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            params8.weight = 1.0f
+            params8.gravity = Gravity.CENTER_VERTICAL
+            linearLayout4.layoutParams = params8
+            linearLayout4.orientation = LinearLayout.VERTICAL
+            linearLayout4.id = View.generateViewId()
+            linearLayout3.addView(linearLayout4)
+            var textView4 = TextView(this.context)
+            var params9 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            textView4.layoutParams = params9
+            textView4.text = brandName
+            textView4.textSize = 16.0f
+            textView4.id = View.generateViewId()
+            linearLayout4.addView(textView4)
+            var textView5 = TextView(this.context)
+            textView5.layoutParams = params9
+            textView5.text = productName
+            textView5.textSize = 20.0f
+            textView5.id = View.generateViewId()
+            linearLayout4.addView(textView5)
+            var textView6 = TextView(this.context)
+            textView6.layoutParams = params9
+            textView6.text = expiration
+            textView6.textSize = 14.0f
+            textView6.id = View.generateViewId()
+            linearLayout4.addView(textView6)
+            var button = Button(this.context)
+            button.layoutParams = params9
+            button.setBackgroundColor(this.context.resources.getColor(R.color.colorPrimary, null))
+            var text = "Genereer recept"
+            button.text = text
+            button.setTextColor(this.context.resources.getColor(R.color.white, null))
+            button.id = View.generateViewId()
+            productView.addView(button)
+            button.setOnClickListener {
+                var spinner = ProgressBar(this.context)
+                var params11 = LinearLayout.LayoutParams(100, 100)
+                params11.setMargins(0, 30, 0, 0)
+                params11.gravity = Gravity.CENTER_HORIZONTAL
+                spinner.layoutParams = params11
+                spinner.id = View.generateViewId()
+                productView.addView(spinner)
+                Thread {
+                    try {
+                        var connection = URL("http://ifridge.local/recipe").openConnection() as HttpURLConnection
+                        connection.doOutput = true
+                        connection.requestMethod = "POST"
+                        connection.connectTimeout = 5000
+                        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                        var body = "mainIngredient=${URLEncoder.encode(productName, "UTF-8")}"
+                        for (product in this.products) {
+                            if (product.key != linearLayout) {
+                                body += "&ingredients=${URLEncoder.encode(product.value.productName, "UTF-8")}"
+                            }
+                        }
+                        var outputStream = connection.outputStream
+                        outputStream.write(body.toByteArray())
+                        outputStream.close()
+                        connection.connect()
+                        var streamReader = InputStreamReader(connection.inputStream)
+                        var bufferReader = BufferedReader(streamReader)
+                        var info = JSONObject(bufferReader.readText())
+                        bufferReader.close()
+                        streamReader.close()
+                        this.context.runOnUiThread {
+                            productView.removeView(spinner)
+                            var textView7 = TextView(this.context)
+                            textView7.layoutParams = params9
+                            textView7.setPadding(0, 20, 0, 0)
+                            textView7.text = info.toString()
+                            textView7.id = View.generateViewId()
+                            productView.addView(textView7)
+                        }
+                    } catch (exc: Exception) {
+                        this.context.runOnUiThread {
+                            productView.removeView(spinner)
+                            var textView7 = TextView(this.context)
+                            textView7.layoutParams = params9
+                            textView7.setPadding(0, 20, 0, 0)
+                            var text2 = "Recept genereren mislukt."
+                            textView7.text = text2
+                            textView7.id = View.generateViewId()
+                            productView.addView(textView7)
+                        }
+                    }
+                }.start()
+            }
+        }
         this.products[linearLayout] = Product(productCode, brandName, productName, expirationDate)
         return linearLayout
     }
