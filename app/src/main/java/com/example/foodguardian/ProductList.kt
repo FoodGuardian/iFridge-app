@@ -237,6 +237,19 @@ class ProductList(private val context: Screen) {
                         var streamReader = InputStreamReader(connection.inputStream)
                         var bufferReader = BufferedReader(streamReader)
                         var info = JSONObject(bufferReader.readText())
+                        var text = "${info.getString("prefix")}\n\nIngrediënten:\n"
+                        var ingredients = info.getJSONArray("ingredients")
+                        for (i in 0 until ingredients.length())
+                        {
+                            text += "- ${ingredients.getString(i)}\n"
+                        }
+                        text += "\nInstructies:\n\n"
+                        var instructions = info.getJSONArray("instructions")
+                        for (i in 0 until instructions.length())
+                        {
+                            text += "${i + 1}. ${instructions.getString(i)}\n"
+                        }
+                        text += "\n${info.getString("suffix")}"
                         bufferReader.close()
                         streamReader.close()
                         this.context.runOnUiThread {
@@ -244,11 +257,11 @@ class ProductList(private val context: Screen) {
                             var textView7 = TextView(this.context)
                             textView7.layoutParams = params9
                             textView7.setPadding(0, 20, 0, 0)
-                            textView7.text = info.toString()
+                            textView7.text = text
                             textView7.id = View.generateViewId()
                             productView.addView(textView7)
                         }
-                    } catch (exc: Exception) {
+                    } catch (_: Exception) {
                         this.context.runOnUiThread {
                             productView.removeView(spinner)
                             var textView7 = TextView(this.context)
