@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.BlendMode
 import android.graphics.BlendModeColorFilter
 import android.graphics.ColorFilter
+import android.graphics.drawable.Drawable
 import android.opengl.Visibility
 import android.text.TextUtils
 import android.view.Gravity
@@ -17,6 +18,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.marginTop
 import androidx.core.view.setPadding
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -32,7 +34,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
-class Product(var productCode: String, var brandName: String, var productName: String, var expirationDate: LocalDate, var hasNotified: Boolean = false)
+class Product(var productId: Int, var productCode: String, var brandName: String, var productName: String, var expirationDate: LocalDate, var hasNotified: Boolean = false)
 
 class ProductList(private val context: Screen) {
     var products = mutableMapOf<LinearLayout, Product>()
@@ -64,7 +66,7 @@ class ProductList(private val context: Screen) {
                         val product = products[i] as JSONObject
                         val expiration = product.getJSONObject("expiration")
                         val expirationDate = LocalDate.of(expiration.getInt("year"), expiration.getInt("month"), expiration.getInt("day"))
-                        this.addProduct(product.getString("productCode"), product.getString("brandName"), product.getString("productName"), expirationDate)
+                        this.addProduct(product.getInt("productId"), product.getString("productCode"), product.getString("brandName"), product.getString("productName"), expirationDate)
                     }
                     refreshLayout.isRefreshing = false
                 }
@@ -76,7 +78,7 @@ class ProductList(private val context: Screen) {
         }.start()
     }
 
-    private fun addProduct(productCode: String, brandName: String, productName: String, expirationDate: LocalDate): LinearLayout {
+    private fun addProduct(productId: Int, productCode: String, brandName: String, productName: String, expirationDate: LocalDate): LinearLayout {
         var productList = this.context.findViewById<LinearLayout>(R.id.productList)
         val linearLayout = LinearLayout(this.context)
         val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400)
@@ -95,6 +97,7 @@ class ProductList(private val context: Screen) {
         var imageView = ImageView(this.context)
         val params3 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1.0f)
         imageView.layoutParams = params3
+        imageView.setImageDrawable(ResourcesCompat.getDrawable(this.context.resources, R.drawable.ifridgeoutline, null))
         imageView.id = View.generateViewId()
         constraintLayout.addView(imageView)
         val constraintSet = ConstraintSet()
@@ -276,7 +279,7 @@ class ProductList(private val context: Screen) {
                 }.start()
             }
         }
-        this.products[linearLayout] = Product(productCode, brandName, productName, expirationDate)
+        this.products[linearLayout] = Product(productId, productCode, brandName, productName, expirationDate)
         return linearLayout
     }
 

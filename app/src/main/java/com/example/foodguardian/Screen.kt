@@ -186,7 +186,11 @@ class Screen : AppCompatActivity() {
         val rnds = (0..10000).random()
         this.notifications.add(rnds)
         with(NotificationManagerCompat.from(this)) {
-            notify(rnds, builder.build())
+            var preferences = getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
+            if (!preferences.getBoolean("hasNotified_${product?.productId}", false)) {
+                notify(rnds, builder.build())
+                preferences.edit().putBoolean("hasNotified_${product?.productId}", true).apply()
+            }
         }
     }
 
