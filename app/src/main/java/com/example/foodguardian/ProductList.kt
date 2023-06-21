@@ -280,6 +280,7 @@ class ProductList(private val context: Screen) {
                             textView7.text = text2
                             textView7.id = View.generateViewId()
                             productView.addView(textView7)
+                            oldRecipe = textView7
                         }
                     }
                 }.start()
