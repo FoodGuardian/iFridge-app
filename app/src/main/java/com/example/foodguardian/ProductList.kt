@@ -212,6 +212,7 @@ class ProductList(private val context: Screen) {
             button.setTextColor(this.context.resources.getColor(R.color.white, null))
             button.id = View.generateViewId()
             productView.addView(button)
+            var oldRecipe: TextView? = null
             button.setOnClickListener {
                 var spinner = ProgressBar(this.context)
                 var params11 = LinearLayout.LayoutParams(100, 100)
@@ -219,6 +220,10 @@ class ProductList(private val context: Screen) {
                 params11.gravity = Gravity.CENTER_HORIZONTAL
                 spinner.layoutParams = params11
                 spinner.id = View.generateViewId()
+                if (oldRecipe != null)
+                {
+                    productView.removeView(oldRecipe)
+                }
                 productView.addView(spinner)
                 Thread {
                     try {
@@ -263,6 +268,7 @@ class ProductList(private val context: Screen) {
                             textView7.text = text
                             textView7.id = View.generateViewId()
                             productView.addView(textView7)
+                            oldRecipe = textView7
                         }
                     } catch (_: Exception) {
                         this.context.runOnUiThread {
