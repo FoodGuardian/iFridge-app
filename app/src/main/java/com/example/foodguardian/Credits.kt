@@ -18,19 +18,13 @@ import java.net.Socket
 
 class Credits : AppCompatActivity() {
 
-    private lateinit var cld: ConnectionCheck
-
     private lateinit var layoutCredits : ConstraintLayout
-    private lateinit var layoutToolBarWithNoConnectionWithModule : ConstraintLayout
-    private lateinit var layoutToolBarWithNoNetwork: ConstraintLayout
     private lateinit var layoutOnline: TextView
     private lateinit var layoutOffline: TextView
     var isReachable = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.credits)
-        layoutToolBarWithNoConnectionWithModule = findViewById(R.id.layoutToolBarWithNoConnectionWithModule)
-        layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
         layoutCredits = findViewById(R.id.layoutCredits)
         layoutOnline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
             .findViewById<TextView>(R.id.layoutOnline)
@@ -61,24 +55,10 @@ class Credits : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
-        checkNetworkConnection()
         checkStatusChangeStatus()
 
     }
-    private fun checkNetworkConnection() {
-        cld = ConnectionCheck(application)
 
-        cld.observe(this) { isConnected ->
-            if (isConnected) {
-                layoutCredits.visibility = View.VISIBLE
-                layoutToolBarWithNoNetwork.visibility = View.GONE
-            } else {
-                layoutCredits.visibility = View.GONE
-                layoutToolBarWithNoNetwork.visibility = View.VISIBLE
-                layoutToolBarWithNoConnectionWithModule.visibility = View.GONE
-            }
-        }
-    }
     private fun checkStatusChangeStatus() {
         Thread {
             val host = "ifridge.local"
@@ -98,13 +78,11 @@ class Credits : AppCompatActivity() {
                 if (this.isReachable) {
                     layoutOnline.visibility = View.VISIBLE
                     layoutOffline.visibility = View.GONE
-                    layoutToolBarWithNoConnectionWithModule.visibility = View.GONE
                     layoutCredits.visibility = View.VISIBLE
                 } else {
                     layoutOnline.visibility = View.GONE
                     layoutOffline.visibility = View.VISIBLE
-                    layoutToolBarWithNoConnectionWithModule.visibility = View.VISIBLE
-                    layoutCredits.visibility = View.GONE
+                    layoutCredits.visibility = View.VISIBLE
                 }
             }
         }.start()
