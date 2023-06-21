@@ -11,28 +11,41 @@
         android:id="@+id/layoutSettings"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <Switch
             android:id="@+id/notifications_switch"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="140dp"
             android:checked="true"
             android:text="Pushmeldingen"
             app:layout_constraintBottom_toTopOf="@+id/dark_mode_switch"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.757" />
 
         <Switch
             android:id="@+id/dark_mode_switch"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="140dp"
+            android:layout_marginBottom="540dp"
             android:text="Donkere modus"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/notifications_switch" />
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="150dp"
+            android:foregroundGravity="center_vertical"
+            android:gravity="center_vertical"
+            android:text="save"
+            app:layout_constraintTop_toBottomOf="@+id/dark_mode_switch"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <LinearLayout
             android:id="@+id/header"
