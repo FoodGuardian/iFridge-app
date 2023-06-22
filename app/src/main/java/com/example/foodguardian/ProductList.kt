@@ -54,7 +54,8 @@ class ProductList(private val context: Screen) {
                     }
                     iterator.remove()
                 }
-                val connection = URL("http://ifridge.local/fetch").openConnection() as HttpURLConnection
+                //val connection = URL("http://ifridge.local/fetch").openConnection() as HttpURLConnection
+                val connection = URL(Constants.baseUrl + "/fetch").openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
                 connection.doOutput = true
                 connection.connect()
@@ -229,7 +230,7 @@ class ProductList(private val context: Screen) {
                 productView.addView(spinner)
                 Thread {
                     try {
-                        var connection = URL("http://ifridge.local/recipe").openConnection() as HttpURLConnection
+                        var connection = URL(Constants.baseUrl + "/recipe").openConnection() as HttpURLConnection
                         connection.doOutput = true
                         connection.requestMethod = "POST"
                         connection.connectTimeout = 5000

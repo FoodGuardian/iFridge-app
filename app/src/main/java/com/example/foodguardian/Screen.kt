@@ -1,5 +1,6 @@
 package com.example.foodguardian
 
+
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -9,17 +10,13 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
+import android.content.SharedPreferences
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
@@ -41,6 +38,7 @@ import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.*
 
 class Screen : AppCompatActivity() {
 
@@ -54,6 +52,7 @@ class Screen : AppCompatActivity() {
     private lateinit var layoutOffline: TextView
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
+
     private var productList = ProductList(this)
     private var Channel_ID = "Channel_ID_Test"
     private var notifications = arrayListOf<Int>()
@@ -184,7 +183,8 @@ class Screen : AppCompatActivity() {
 
     private fun checkStatusChangeStatus() {
         Thread {
-            val host = "ifridge.local"
+            //val host = "ifridge.local"
+            val host = Constants.baseIp
             val port = 3306
             runOnUiThread {
                 findViewById<SwipeRefreshLayout>(R.id.refreshLayout).isRefreshing = true
@@ -194,7 +194,7 @@ class Screen : AppCompatActivity() {
                 socket.connect(InetSocketAddress(host, port), 5000)
                 this.isReachable = true
                 socket.close()
-            } catch (_: IOException) {
+            } catch (e: IOException) {
                 // Kan geen verbinding maken met de opgegeven host en poort
                 this.isReachable = false
             }
@@ -230,8 +230,14 @@ class Screen : AppCompatActivity() {
                             val daysUntilExpiry =
                                 ChronoUnit.DAYS.between(current, product.value.expirationDate)
                             if (daysUntilExpiry < 3) {
-                                this.productList.getProduct(product.key)?.hasNotified = true
+                                this.productList.getProduct(product.key)?.hasNotified = false
                                 sendNotification(product.key)
+                                val sharedPreferences: SharedPreferences =
+                                    getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+                                val savedNotification = sharedPreferences.getBoolean("notificationSwitch", false)
+                                if (savedNotification == true) {
+                                    sendNotification(product.key)
+                                }
                             }
                         }
                     }
@@ -283,6 +289,7 @@ class Screen : AppCompatActivity() {
             }.start()
         }
     }
+
 }
 
 
