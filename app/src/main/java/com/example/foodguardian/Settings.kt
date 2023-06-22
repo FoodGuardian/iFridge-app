@@ -77,8 +77,8 @@ class Settings : AppCompatActivity() {
             getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
         editor.apply {
-            editor.putBoolean("BOOLEAN1_KEY", dark_mode_switch.isChecked)
-            editor.putBoolean("BOOLEAN_KEY", notifications_switch.isChecked)
+            editor.putBoolean("darkmodeSwitch", dark_mode_switch.isChecked)
+            editor.putBoolean("notificationSwitch", notifications_switch.isChecked)
             editor.apply()
         }.apply()
         Toast.makeText(this, "Data opgeslagen", Toast.LENGTH_SHORT).show()
@@ -87,11 +87,11 @@ class Settings : AppCompatActivity() {
     private fun loadData() {
         val sharedPreferences: SharedPreferences =
             getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-        val savedBoolean = sharedPreferences.getBoolean("BOOLEAN_KEY", false)
-        val savedBoolean1 = sharedPreferences.getBoolean("BOOLEAN1_KEY", false)
+        val savedNotification = sharedPreferences.getBoolean("notificationSwitch", false)
+        val savedDarkmode = sharedPreferences.getBoolean("darkmodeSwitch", false)
 
-        notifications_switch.isChecked = savedBoolean
-        dark_mode_switch.isChecked = savedBoolean1
+        notifications_switch.isChecked = savedNotification
+        dark_mode_switch.isChecked = savedDarkmode
     }
 
     private fun checkNetworkConnection() {

@@ -190,7 +190,6 @@ class Screen : AppCompatActivity() {
         val rnds = (0..10000).random()
         this.notifications.add(rnds)
         with(NotificationManagerCompat.from(this)) {
-            Log.i("NOTIFICATIE DINGEN", "NU GA IK IETS VERSTUREN!")
             var preferences = getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
             if (!preferences.getBoolean("hasNotified_${product?.productId}", false)) {
                 notify(rnds, builder.build())
@@ -248,13 +247,12 @@ class Screen : AppCompatActivity() {
                             val daysUntilExpiry =
                                 ChronoUnit.DAYS.between(current, product.value.expirationDate)
                             if (daysUntilExpiry < 3) {
-                                Log.i("NOTIFICTIE DINGEN", "WE HEBBEN PRODucTEN DIE EEN MELDING moeten versutreN!!!!!!!!!!!!!")
                                 this.productList.getProduct(product.key)?.hasNotified = false
                                 sendNotification(product.key)
                                 val sharedPreferences: SharedPreferences =
                                     getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-                                val savedBoolean = sharedPreferences.getBoolean("BOOLEAN_KEY", true)
-                                if (savedBoolean) {
+                                val savedNotification = sharedPreferences.getBoolean("notificationSwitch", false)
+                                if (savedNotification == true) {
                                     sendNotification(product.key)
                                 }
                             }
