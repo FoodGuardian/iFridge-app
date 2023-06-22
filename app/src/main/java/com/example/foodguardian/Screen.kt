@@ -9,12 +9,17 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
@@ -24,14 +29,18 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.navigation.NavigationView
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.BufferedReader
 import java.io.IOException
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
 import java.net.InetSocketAddress
 import java.net.Socket
+import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.Calendar
-
 
 class Screen : AppCompatActivity() {
 
@@ -96,34 +105,24 @@ class Screen : AppCompatActivity() {
             true
         }
 
+        alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmClass = AlarmReceiver()
+        val intent = Intent(this, alarmClass::class.java)
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            System.currentTimeMillis(),
+            AlarmManager.INTERVAL_HOUR,
+            pendingIntent
+        )
+
+        dateChecker()
 
         val refreshLayout = findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
         refreshLayout.setOnRefreshListener {
             this.productList.syncProducts()
         }
-        alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val alarmClass = AlarmReceiver(this)
-        val intent = Intent(this, alarmClass::class.java)
-        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-
-        val calendar: Calendar = Calendar.getInstance()
-        calendar.timeInMillis = System.currentTimeMillis()
-        calendar.set(Calendar.HOUR_OF_DAY, 11)
-        calendar.set(Calendar.MINUTE, 13)
-        calendar.set(Calendar.SECOND, 0)
-
-        if (calendar.timeInMillis < System.currentTimeMillis()) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
-        alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            AlarmManager.INTERVAL_DAY,
-            pendingIntent
-        )
-
-        dateChecker()
     }
 
     private fun checkNetworkConnection() {
@@ -145,16 +144,6 @@ class Screen : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.WRITE_CALENDAR), 1)
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.READ_CALENDAR),1)
-        }
-    }
-
-    fun hasPermissions(): Boolean {
-        return (Build.VERSION.SDK_INT < 33 || ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun createNotificationChannel() {
@@ -162,7 +151,6 @@ class Screen : AppCompatActivity() {
             val name = "Eten is bijna overdatum"
             val descriptionText = "Het volgende product is bijna overdatum [Eten]"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val alarmReceiver = AlarmReceiver(this)
             val channel = NotificationChannel(Channel_ID, name, importance).apply {
                 description = descriptionText
             }
@@ -251,12 +239,48 @@ class Screen : AppCompatActivity() {
             }
         }.start()
     }
-    class AlarmReceiver(screen: Screen) : BroadcastReceiver() {
+    class AlarmReceiver() : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val screen = context as Screen
-            val productLayout: LinearLayout =
-                intent.getSerializableExtra("productLayout") as LinearLayout
-            screen.sendNotification(productLayout)
+            Thread {
+                try
+                {
+                    val connection = URL("http://ifridge.local/fetch").openConnection() as HttpURLConnection
+                    connection.requestMethod = "POST"
+                    connection.doOutput = true
+                    connection.connect()
+                    val streamReader = InputStreamReader(connection.inputStream)
+                    val bufferReader = BufferedReader(streamReader)
+                    val products = JSONArray(bufferReader.readText())
+                    bufferReader.close()
+                    streamReader.close()
+                    for (i in 0 until products.length()) {
+                        val product = products[i] as JSONObject
+                        val expiration = product.getJSONObject("expiration")
+                        val date = LocalDate.of(expiration.getInt("year"), expiration.getInt("month"), expiration.getInt("day"))
+                        if (ChronoUnit.DAYS.between(LocalDate.now(), date) < 3)
+                        {
+                            val formattedDate = date.format(DateTimeFormatter.ofPattern("dd/MM/uuuu"))
+                            val pendingIntent: PendingIntent =
+                                PendingIntent.getActivity(context, 0, Intent(), PendingIntent.FLAG_IMMUTABLE)
+                            val builder = NotificationCompat.Builder(context, "Channel_ID_Test")
+                                .setSmallIcon(R.drawable.ifridge)
+                                .setContentTitle("Houdbaarheid ${product.getString("productName")}")
+                                .setContentText("Het volgende product is bijna overdatum: ${product.getString("productName")} de houdbaarheidsdatum is $formattedDate")
+                                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                .setContentIntent(pendingIntent)
+                            with(NotificationManagerCompat.from(context)) {
+                                var preferences = context.getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
+                                if (!preferences.getBoolean("hasNotified_${product.getInt("productId")}", false)) {
+                                    notify((0..10000).random(), builder.build())
+                                    preferences.edit().putBoolean("hasNotified_${product.getInt("productId")}", true).apply()
+                                }
+                            }
+                        }
+                    }
+                } catch (_: Exception)
+                {
+                }
+            }.start()
         }
     }
 }

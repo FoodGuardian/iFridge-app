@@ -49,7 +49,9 @@ class ProductList(private val context: Screen) {
                 val iterator = this.products.iterator()
                 while (iterator.hasNext()) {
                     val product = iterator.next()
-                    this.context.findViewById<LinearLayout>(R.id.productList).removeView(product.key)
+                    this.context.runOnUiThread {
+                        this.context.findViewById<LinearLayout>(R.id.productList).removeView(product.key)
+                    }
                     iterator.remove()
                 }
                 val connection = URL("http://ifridge.local/fetch").openConnection() as HttpURLConnection
