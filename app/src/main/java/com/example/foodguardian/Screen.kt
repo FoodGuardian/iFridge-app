@@ -1,5 +1,6 @@
 package com.example.foodguardian
 
+
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -9,9 +10,11 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -30,7 +33,7 @@ import java.net.Socket
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.Calendar
+import java.util.*
 
 
 class Screen : AppCompatActivity() {
@@ -45,6 +48,7 @@ class Screen : AppCompatActivity() {
     private lateinit var layoutOffline: TextView
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
+
     private var productList = ProductList(this)
     private var Channel_ID = "Channel_ID_Test"
     private var notifications = arrayListOf<Int>()
@@ -186,6 +190,7 @@ class Screen : AppCompatActivity() {
         val rnds = (0..10000).random()
         this.notifications.add(rnds)
         with(NotificationManagerCompat.from(this)) {
+            Log.i("NOTIFICATIE DINGEN", "NU GA IK IETS VERSTUREN!")
             var preferences = getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
             if (!preferences.getBoolean("hasNotified_${product?.productId}", false)) {
                 notify(rnds, builder.build())
@@ -196,7 +201,8 @@ class Screen : AppCompatActivity() {
 
     private fun checkStatusChangeStatus() {
         Thread {
-            val host = "ifridge.local"
+            //val host = "ifridge.local"
+            val host = Constants.baseIp
             val port = 3306
             runOnUiThread {
                 findViewById<SwipeRefreshLayout>(R.id.refreshLayout).isRefreshing = true
@@ -206,7 +212,7 @@ class Screen : AppCompatActivity() {
                 socket.connect(InetSocketAddress(host, port), 5000)
                 this.isReachable = true
                 socket.close()
-            } catch (_: IOException) {
+            } catch (e: IOException) {
                 // Kan geen verbinding maken met de opgegeven host en poort
                 this.isReachable = false
             }
@@ -242,8 +248,15 @@ class Screen : AppCompatActivity() {
                             val daysUntilExpiry =
                                 ChronoUnit.DAYS.between(current, product.value.expirationDate)
                             if (daysUntilExpiry < 3) {
-                                this.productList.getProduct(product.key)?.hasNotified = true
+                                Log.i("NOTIFICTIE DINGEN", "WE HEBBEN PRODucTEN DIE EEN MELDING moeten versutreN!!!!!!!!!!!!!")
+                                this.productList.getProduct(product.key)?.hasNotified = false
                                 sendNotification(product.key)
+                                val sharedPreferences: SharedPreferences =
+                                    getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+                                val savedBoolean = sharedPreferences.getBoolean("BOOLEAN_KEY", true)
+                                if (savedBoolean) {
+                                    sendNotification(product.key)
+                                }
                             }
                         }
                     }
@@ -259,6 +272,7 @@ class Screen : AppCompatActivity() {
             screen.sendNotification(productLayout)
         }
     }
+
 }
 
 
