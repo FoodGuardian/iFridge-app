@@ -112,7 +112,7 @@ class Screen : AppCompatActivity() {
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             System.currentTimeMillis(),
-            AlarmManager.INTERVAL_HOUR,
+            60000,
             pendingIntent
         )
 
@@ -173,7 +173,7 @@ class Screen : AppCompatActivity() {
         val rnds = (0..10000).random()
         this.notifications.add(rnds)
         with(NotificationManagerCompat.from(this)) {
-            var preferences = getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
+            val preferences = getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
             if (!preferences.getBoolean("hasNotified_${product?.productId}", false)) {
                 notify(rnds, builder.build())
                 preferences.edit().putBoolean("hasNotified_${product?.productId}", true).apply()
@@ -229,7 +229,7 @@ class Screen : AppCompatActivity() {
                             val daysUntilExpiry =
                                 ChronoUnit.DAYS.between(current, product.value.expirationDate)
                             if (daysUntilExpiry < 3) {
-                                this.productList.getProduct(product.key)?.hasNotified = false
+                                this.productList.getProduct(product.key)?.hasNotified = true
                                 val sharedPreferences: SharedPreferences =
                                     getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
                                 val savedNotification = sharedPreferences.getBoolean("notificationSwitch", false)
@@ -254,6 +254,9 @@ class Screen : AppCompatActivity() {
                     connection.connect()
                     val streamReader = InputStreamReader(connection.inputStream)
                     val bufferReader = BufferedReader(streamReader)
+                    val sharedPreferences: SharedPreferences =
+                        context.getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
+                    val savedNotification = sharedPreferences.getBoolean("notificationSwitch", false)
                     val products = JSONArray(bufferReader.readText())
                     bufferReader.close()
                     streamReader.close()
@@ -273,9 +276,11 @@ class Screen : AppCompatActivity() {
                                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                                 .setContentIntent(pendingIntent)
                             with(NotificationManagerCompat.from(context)) {
-                                var preferences = context.getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
+                                val preferences = context.getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
                                 if (!preferences.getBoolean("hasNotified_${product.getInt("productId")}", false)) {
-                                    notify((0..10000).random(), builder.build())
+                                    if (savedNotification) {
+                                        notify((0..10000).random(), builder.build())
+                                    }
                                     preferences.edit().putBoolean("hasNotified_${product.getInt("productId")}", true).apply()
                                 }
                             }
