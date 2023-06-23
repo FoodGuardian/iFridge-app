@@ -1,5 +1,6 @@
 package com.example.foodguardian
 
+// Imports
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -16,7 +17,9 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 
+// Settings pagina klasse
 class Settings : AppCompatActivity() {
+    // Variabelen voor onderdelen van de layout
     private lateinit var layoutSettings: ConstraintLayout
     private lateinit var saveButton: Button
     private lateinit var notificationSwitch: Switch
@@ -28,6 +31,7 @@ class Settings : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_page)
 
+        // Initieer variabelen voor onderdelen van de layout
         layoutSettings = findViewById(R.id.layoutSettings)
         saveButton = findViewById(R.id.saveButton)
         notificationSwitch = findViewById(R.id.notifications_switch)
@@ -35,16 +39,21 @@ class Settings : AppCompatActivity() {
         headerLayout = findViewById(R.id.header)
         textTitle = findViewById(R.id.textTitle)
 
+        // Open de drawer wanneer er op geklikt wordt
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         findViewById<View>(R.id.imageMenudropdown).setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
 
+        // Zet de switches op de ingestelde waarde
         loadData()
 
+        // Sla waarde van switches op wanneer er op de save-knop wordt gedrukt
         saveButton.setOnClickListener{
             saveData()
         }
+
+        // Ga naar andere pagina wanneer er op een optie in het drawer menu wordt geklikt
         findViewById<NavigationView>(R.id.navigationView).setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menuProductList -> {
@@ -66,11 +75,13 @@ class Settings : AppCompatActivity() {
             true
         }
 
+        // Zet de pagina in donkere modus wanneer er op de switch wordt gedrukt
         darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
             updateTheme(isChecked)
         }
     }
 
+    // Sla gegevens op in de sharedpreferences van de app
     private fun saveData() {
         val sharedPreferences: SharedPreferences =
             getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
@@ -80,9 +91,11 @@ class Settings : AppCompatActivity() {
         editor.putBoolean("notificationSwitch", notificationSwitch.isChecked)
 
         editor.apply()
+        // Laat een toast zien die aangeeft dat de data is opgeslagen
         Toast.makeText(this, "Data opgeslagen", Toast.LENGTH_SHORT).show()
     }
 
+    // Haal gegevens op uit de sharedpreferences van de app
     private fun loadData() {
         val sharedPreferences: SharedPreferences =
             getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
@@ -91,9 +104,11 @@ class Settings : AppCompatActivity() {
 
         notificationSwitch.isChecked = savedNotification
         darkModeSwitch.isChecked = savedDarkmode
+        // Pas het thema aan op basis van of donkere modus aan of uit staat
         updateTheme(savedDarkmode)
     }
 
+    // Verander het kleurenthema naar donker of wit
     private fun updateTheme(isDarkMode: Boolean) {
         val backgroundColor = if (isDarkMode) R.color.dark_gray else android.R.color.white
         val textColor = if (isDarkMode) android.R.color.white else android.R.color.white
