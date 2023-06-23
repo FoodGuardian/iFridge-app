@@ -1,12 +1,7 @@
 package com.example.foodguardian
 
-import android.content.res.ColorStateList
+// Imports
 import android.graphics.BitmapFactory
-import android.graphics.BlendMode
-import android.graphics.BlendModeColorFilter
-import android.graphics.ColorFilter
-import android.graphics.drawable.Drawable
-import android.opengl.Visibility
 import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
@@ -15,38 +10,39 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.marginTop
 import androidx.core.view.setPadding
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
 
+// Klasse voor producten
 class Product(var productId: Int, var productCode: String, var brandName: String, var productName: String, var expirationDate: LocalDate, var hasNotified: Boolean = false)
 
 class ProductList(private val context: Screen) {
+    // Lijst met paren van views en producten om alle producten in op te slaan
     var products = mutableMapOf<LinearLayout, Product>()
 
+    // Synchroniseer alle producten met de database op de iFridge
     fun syncProducts() {
         Thread {
             val refreshLayout = this.context.findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
             try {
                 this.context.runOnUiThread {
+                    // Zet de herlaad-spinner aan
                     refreshLayout.isRefreshing = true
                 }
                 val iterator = this.products.iterator()
+                // Verwijder alle oude producten
                 while (iterator.hasNext()) {
                     val product = iterator.next()
                     this.context.runOnUiThread {
@@ -54,7 +50,7 @@ class ProductList(private val context: Screen) {
                     }
                     iterator.remove()
                 }
-                //val connection = URL("http://ifridge.local/fetch").openConnection() as HttpURLConnection
+                // Stuur een POST verzoek naar het eindpunt /fetch om alle producten op te vragen
                 val connection = URL(Constants.baseUrl + "/fetch").openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
                 connection.doOutput = true
@@ -66,14 +62,18 @@ class ProductList(private val context: Screen) {
                 streamReader.close()
                 this.context.runOnUiThread {
                     for (i in 0 until products.length()) {
+                        // Parseer alle json-objecten voor alle producten
                         val product = products[i] as JSONObject
                         val expiration = product.getJSONObject("expiration")
                         val expirationDate = LocalDate.of(expiration.getInt("year"), expiration.getInt("month"), expiration.getInt("day"))
+                        // Voeg het product toe
                         this.addProduct(product.getInt("productId"), product.getString("productCode"), product.getString("brandName"), product.getString("productName"), expirationDate)
                     }
+                    // Zet de herlaad-spinner uit
                     refreshLayout.isRefreshing = false
                 }
             } catch (_: Exception) {
+                // Wanneer er iets fout gaat, zet de herlaad-spinner uit om oneindig laden te voorkomen
                 this.context.runOnUiThread {
                     refreshLayout.isRefreshing = false
                 }
@@ -81,8 +81,11 @@ class ProductList(private val context: Screen) {
         }.start()
     }
 
+    // Functie voor het toevoegen van een product
     private fun addProduct(productId: Int, productCode: String, brandName: String, productName: String, expirationDate: LocalDate): LinearLayout {
-        var productList = this.context.findViewById<LinearLayout>(R.id.productList)
+        // Vraag de productlijst-view op om het product aan toe te voegen
+        val productList = this.context.findViewById<LinearLayout>(R.id.productList)
+        // Maak een nieuwe linearlayout aan waar de gegevens van het product in worden weergegeven
         val linearLayout = LinearLayout(this.context)
         val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400)
         params.bottomMargin = 40
@@ -90,31 +93,40 @@ class ProductList(private val context: Screen) {
         linearLayout.setBackgroundResource(R.drawable.product)
         linearLayout.orientation = LinearLayout.HORIZONTAL
         linearLayout.id = View.generateViewId()
+        // Voeg de linearlayout toe aan de productlijst
         productList.addView(linearLayout)
+        // Maak een nieuwe contraintlayout aan waarin de afbeelding wordt weergegeven
         val constraintLayout = ConstraintLayout(this.context)
         val params2 = LinearLayout.LayoutParams(400, 400)
         constraintLayout.layoutParams = params2
         constraintLayout.setPadding(40)
         constraintLayout.id = View.generateViewId()
+        // Voeg de constraintlayout toe aan het product
         linearLayout.addView(constraintLayout)
-        var imageView = ImageView(this.context)
+        // Maak een nieuwe imageview met een placeholder afbeelding die wordt weergegeven wanneer de afbeelding
+        val imageView = ImageView(this.context)
         val params3 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1.0f)
         imageView.layoutParams = params3
         imageView.setImageDrawable(ResourcesCompat.getDrawable(this.context.resources, R.drawable.ifridgeoutline, null))
         imageView.id = View.generateViewId()
+        // Voeg de afbeelding toe aan de constraintlayout
         constraintLayout.addView(imageView)
+        // Zet de uitlijning van de afbeelding
         val constraintSet = ConstraintSet()
         constraintSet.clone(constraintLayout)
         constraintSet.connect(imageView.id, ConstraintSet.START, constraintLayout.id, ConstraintSet.START, 0)
         constraintSet.connect(imageView.id, ConstraintSet.TOP, constraintLayout.id, ConstraintSet.TOP, 0)
         constraintSet.applyTo(constraintLayout)
+        // Maak een nieuwe linearlayout om de texten in te zetten
         val linearLayout2 = LinearLayout(this.context)
         val params4 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
         linearLayout2.layoutParams = params4
         linearLayout2.setPadding(0, 40, 40, 40)
         linearLayout2.orientation = LinearLayout.VERTICAL
         linearLayout2.id = View.generateViewId()
+        // Voeg de linearlayout toe aan het product
         linearLayout.addView(linearLayout2)
+        // Maak een textview met de naam van het mark van het product
         val textView = TextView(this.context)
         val params5 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.0f)
         textView.layoutParams = params5
@@ -124,7 +136,9 @@ class ProductList(private val context: Screen) {
         textView.setTextColor(this.context.resources.getColor(R.color.white, null))
         textView.textSize = 16.0f
         textView.id = View.generateViewId()
+        // Voeg de tekst toe aan de linearlayout
         linearLayout2.addView(textView)
+        // Maak een nieuwe textview aan met de naam van het product
         val textView2 = TextView(this.context)
         textView2.layoutParams = params5
         textView2.text = productName
@@ -133,7 +147,9 @@ class ProductList(private val context: Screen) {
         textView2.setTextColor(this.context.resources.getColor(R.color.white, null))
         textView2.textSize = 20.0f
         textView2.id = View.generateViewId()
+        // Voeg de tekst toe aan de linearlayout
         linearLayout2.addView(textView2)
+        // Maak een nieuwe textview aan met de houdbaarheidsdatum van het product
         val textView3 = TextView(this.context)
         textView3.layoutParams = params5
         val format = DateTimeFormatter.ofPattern("dd/MM/uuuu")
@@ -144,93 +160,119 @@ class ProductList(private val context: Screen) {
         textView3.setTextColor(this.context.resources.getColor(R.color.white, null))
         textView3.textSize = 14.0f
         textView3.id = View.generateViewId()
+        // Voeg de tekst toe aan de linearlayout
         linearLayout2.addView(textView3)
         Thread {
             try {
-                var connection = URL("https://world.openfoodfacts.org/api/v0/product/$productCode.json").openConnection()
+                // Stuur een verzoek om gegevens van het product op te halen van de openfoodfacts database
+                val connection = URL("https://world.openfoodfacts.org/api/v0/product/$productCode.json").openConnection()
                 connection.doOutput = true
                 connection.connectTimeout = 5000
                 connection.connect()
-                var streamReader = InputStreamReader(connection.inputStream)
-                var bufferReader = BufferedReader(streamReader)
-                var info = JSONObject(bufferReader.readText())
+                // Parseer het json-object en haal de url van de afbeelding van het product hieruit
+                val streamReader = InputStreamReader(connection.inputStream)
+                val bufferReader = BufferedReader(streamReader)
+                val info = JSONObject(bufferReader.readText())
                 bufferReader.close()
                 streamReader.close()
-                var stream = URL(info.getJSONObject("product").getString("image_url")).openStream()
-                var bitmap = BitmapFactory.decodeStream(stream)
+                val stream = URL(info.getJSONObject("product").getString("image_url")).openStream()
+                // Zet de url om in een bitmap afbeelding
+                val bitmap = BitmapFactory.decodeStream(stream)
                 this.context.runOnUiThread {
                     imageView.setImageBitmap(bitmap)
                 }
-            } catch (exc: Exception) {}
+            } catch (_: Exception) {}
         }.start()
+        // Voer een actie wanneer er op het product wordt geklikt
         linearLayout.setOnClickListener {
+            // Zet de recept-pagina op zichtbaar en de productlijst pagina op onzichtbaar
             this.context.findViewById<ConstraintLayout>(R.id.productLayout).visibility = View.VISIBLE
             productList.visibility = View.GONE
-            var productView = this.context.findViewById<LinearLayout>(R.id.productView)
-            var linearLayout3 = LinearLayout(this.context)
-            var params6 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
+            // Vraag de view op voor de product pagina
+            val productView = this.context.findViewById<LinearLayout>(R.id.productView)
+            // Maak een nieuwe linearlayout aan om de onderdelen van de pagina in te zetten
+            val linearLayout3 = LinearLayout(this.context)
+            val params6 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
             linearLayout3.layoutParams = params6
             linearLayout3.orientation = LinearLayout.HORIZONTAL
             linearLayout3.setPadding(40)
             linearLayout3.id = View.generateViewId()
+            // Voeg de linearlayout toe aan de pagina
             productView.addView(linearLayout3)
-            var imageView2 = ImageView(this.context)
-            var params7 = LinearLayout.LayoutParams(400, 400)
+            // Maak een nieuwe imageview aan voor de afbeelding van het product
+            val imageView2 = ImageView(this.context)
+            val params7 = LinearLayout.LayoutParams(400, 400)
             imageView2.layoutParams = params7
             imageView2.setImageDrawable(imageView.drawable)
             imageView2.id = View.generateViewId()
+            // Voeg de afbeelding toe aan de linearlayout
             linearLayout3.addView(imageView2)
-            var linearLayout4 = LinearLayout(this.context)
-            var params8 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            // Maak een nieuwe linearlayout aan voor de teksten van het product
+            val linearLayout4 = LinearLayout(this.context)
+            val params8 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
             params8.weight = 1.0f
             params8.gravity = Gravity.CENTER_VERTICAL
             linearLayout4.layoutParams = params8
             linearLayout4.orientation = LinearLayout.VERTICAL
             linearLayout4.id = View.generateViewId()
+            // Voeg de linearlayout toe aan de vorige linearlayout
             linearLayout3.addView(linearLayout4)
-            var textView4 = TextView(this.context)
-            var params9 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            // Maak een nieuwe textview aan voor de naam van het merk van het product
+            val textView4 = TextView(this.context)
+            val params9 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
             textView4.layoutParams = params9
             textView4.text = brandName
             textView4.textSize = 16.0f
             textView4.id = View.generateViewId()
+            // Voeg de tekst toe aan de linearlayout
             linearLayout4.addView(textView4)
-            var textView5 = TextView(this.context)
+            // Maak een nieuwe textview aan met de naam van het product
+            val textView5 = TextView(this.context)
             textView5.layoutParams = params9
             textView5.text = productName
             textView5.textSize = 20.0f
             textView5.id = View.generateViewId()
+            // Voeg de tekst toe aan de linearlayout
             linearLayout4.addView(textView5)
-            var textView6 = TextView(this.context)
+            // Maak een nieuwe textview aan met de houdbaarheidsdatum van het product
+            val textView6 = TextView(this.context)
             textView6.layoutParams = params9
             textView6.text = expiration
             textView6.textSize = 14.0f
             textView6.id = View.generateViewId()
+            // Voeg de tekst toe aan de linearlayout
             linearLayout4.addView(textView6)
-            var button = Button(this.context)
+            // Maak een nieuwe button aan voor het genereren van recepten
+            val button = Button(this.context)
             button.layoutParams = params9
             button.setBackgroundColor(this.context.resources.getColor(R.color.colorPrimary, null))
-            var text = "Genereer recept"
+            val text = "Genereer recept"
             button.text = text
             button.setTextColor(this.context.resources.getColor(R.color.white, null))
             button.id = View.generateViewId()
+            // Voeg de knop toe aan de product pagina
             productView.addView(button)
+            // Bewaar het oude recept voor wanneer het recept vervangen moet worden
             var oldRecipe: TextView? = null
+            // Maak een laad-spinner wanneer er op de knop wordt gedrukt
             button.setOnClickListener {
-                var spinner = ProgressBar(this.context)
-                var params11 = LinearLayout.LayoutParams(100, 100)
+                val spinner = ProgressBar(this.context)
+                val params11 = LinearLayout.LayoutParams(100, 100)
                 params11.setMargins(0, 30, 0, 0)
                 params11.gravity = Gravity.CENTER_HORIZONTAL
                 spinner.layoutParams = params11
                 spinner.id = View.generateViewId()
+                // Verwijder het oude recept wanneer deze bestaat
                 if (oldRecipe != null)
                 {
                     productView.removeView(oldRecipe)
                 }
+                // Voeg de spinner toe aan de product pagina
                 productView.addView(spinner)
                 Thread {
                     try {
-                        var connection = URL(Constants.baseUrl + "/recipe").openConnection() as HttpURLConnection
+                        // Vraag een recept op met behulp van de producten in de koelkast
+                        val connection = URL(Constants.baseUrl + "/recipe").openConnection() as HttpURLConnection
                         connection.doOutput = true
                         connection.requestMethod = "POST"
                         connection.connectTimeout = 5000
@@ -241,45 +283,51 @@ class ProductList(private val context: Screen) {
                                 body += "&ingredients=${URLEncoder.encode(product.value.productName, "UTF-8")}"
                             }
                         }
-                        var outputStream = connection.outputStream
+                        val outputStream = connection.outputStream
                         outputStream.write(body.toByteArray())
                         outputStream.close()
                         connection.connect()
-                        var streamReader = InputStreamReader(connection.inputStream)
-                        var bufferReader = BufferedReader(streamReader)
-                        var info = JSONObject(bufferReader.readText())
-                        var text = "${info.getString("prefix")}\n\nIngrediënten:\n"
-                        var ingredients = info.getJSONArray("ingredients")
+                        // Parseer de gegevens van het recept
+                        val streamReader = InputStreamReader(connection.inputStream)
+                        val bufferReader = BufferedReader(streamReader)
+                        val info = JSONObject(bufferReader.readText())
+                        var txt = "${info.getString("prefix")}\n\nIngrediënten:\n"
+                        val ingredients = info.getJSONArray("ingredients")
+                        // Voeg de lijst met ingrediënten toe aan het recept
                         for (i in 0 until ingredients.length())
                         {
-                            text += "- ${ingredients.getString(i)}\n"
+                            txt += "- ${ingredients.getString(i)}\n"
                         }
-                        text += "\nInstructies:\n\n"
-                        var instructions = info.getJSONArray("instructions")
+                        txt += "\nInstructies:\n\n"
+                        val instructions = info.getJSONArray("instructions")
+                        // Voeg de instructies toe aan het recept
                         for (i in 0 until instructions.length())
                         {
-                            text += "${i + 1}. ${instructions.getString(i)}\n"
+                            txt += "${i + 1}. ${instructions.getString(i)}\n"
                         }
-                        text += "\n${info.getString("suffix")}"
+                        txt += "\n${info.getString("suffix")}"
                         bufferReader.close()
                         streamReader.close()
                         this.context.runOnUiThread {
+                            // Verwijder de spinner en voeg het recept toe aan de product pagina
                             productView.removeView(spinner)
-                            var textView7 = TextView(this.context)
+                            val textView7 = TextView(this.context)
                             textView7.layoutParams = params9
                             textView7.setPadding(0, 20, 0, 0)
-                            textView7.text = text
+                            textView7.text = txt
                             textView7.id = View.generateViewId()
                             productView.addView(textView7)
+                            // Zet het oude recept naar het huidige recept
                             oldRecipe = textView7
                         }
                     } catch (_: Exception) {
                         this.context.runOnUiThread {
+                            // Geef waar dat een recept genereren is mislukt en verwijder de spinner
                             productView.removeView(spinner)
-                            var textView7 = TextView(this.context)
+                            val textView7 = TextView(this.context)
                             textView7.layoutParams = params9
                             textView7.setPadding(0, 20, 0, 0)
-                            var text2 = "Recept genereren mislukt."
+                            val text2 = "Recept genereren mislukt."
                             textView7.text = text2
                             textView7.id = View.generateViewId()
                             productView.addView(textView7)
@@ -289,10 +337,12 @@ class ProductList(private val context: Screen) {
                 }.start()
             }
         }
+        // Voeg het product toe aan de productenlijst
         this.products[linearLayout] = Product(productId, productCode, brandName, productName, expirationDate)
         return linearLayout
     }
 
+    // Functie om een product op te vragen
     fun getProduct(product: LinearLayout): Product? {
         return this.products[product]
     }
