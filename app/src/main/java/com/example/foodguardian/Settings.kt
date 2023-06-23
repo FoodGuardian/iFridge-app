@@ -58,7 +58,7 @@ class Settings : AppCompatActivity() {
                 }
 
                 R.id.menuCredits -> {
-                    val intent = Intent(this@Settings, Screen::class.java)
+                    val intent = Intent(this@Settings, Credits::class.java)
                     startActivity(intent)
                 }
             }
@@ -98,9 +98,12 @@ class Settings : AppCompatActivity() {
         val backgroundColor = if (isDarkMode) R.color.dark_gray else android.R.color.white
         val textColor = if (isDarkMode) android.R.color.white else android.R.color.white
         val headerColor = if (isDarkMode) android.R.color.black else R.color.colorPrimary
+        val switchTextColor = if (isDarkMode) android.R.color.white else android.R.color.black
 
         layoutSettings.setBackgroundColor(ContextCompat.getColor(this, backgroundColor))
         textTitle.setTextColor(ContextCompat.getColor(this, textColor))
         headerLayout.setBackgroundColor(ContextCompat.getColor(this, headerColor))
+        notificationSwitch.setTextColor(ContextCompat.getColor(this, switchTextColor))
+        darkModeSwitch.setTextColor(ContextCompat.getColor(this, switchTextColor))
     }
 }

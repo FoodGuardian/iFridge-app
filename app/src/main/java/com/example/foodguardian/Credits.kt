@@ -1,27 +1,33 @@
 package com.example.foodguardian
 
-
+import android.content.Context
 import android.content.Intent
-
+import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.navigation.NavigationView
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
 
 class Credits : AppCompatActivity() {
-
-    private lateinit var layoutCredits : ConstraintLayout
+    private lateinit var layoutCredits: ConstraintLayout
     private lateinit var layoutOnline: TextView
     private lateinit var layoutOffline: TextView
-    var isReachable = false
+    private lateinit var headerLayout: LinearLayout
+    private var isReachable = false
+
+    private lateinit var sharedPreferences: SharedPreferences
+    private var savedDarkmode = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.credits)
@@ -30,6 +36,10 @@ class Credits : AppCompatActivity() {
             .findViewById<TextView>(R.id.layoutOnline)
         layoutOffline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
             .findViewById<TextView>(R.id.layoutOffline)
+        headerLayout = findViewById(R.id.header)
+        sharedPreferences = getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
+        savedDarkmode = sharedPreferences.getBoolean("darkmodeSwitch", false)
+
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         findViewById<View>(R.id.imageMenudropdown).setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
@@ -56,7 +66,7 @@ class Credits : AppCompatActivity() {
             true
         }
         checkStatusChangeStatus()
-
+        applyDarkMode()
     }
 
     private fun checkStatusChangeStatus() {
@@ -68,14 +78,14 @@ class Credits : AppCompatActivity() {
             try {
                 val socket = Socket()
                 socket.connect(InetSocketAddress(host, port), 5000)
-                this.isReachable = true
+                isReachable = true
                 socket.close()
             } catch (_: IOException) {
                 // Kan geen verbinding maken met de opgegeven host en poort
-                this.isReachable = false
+                isReachable = false
             }
             runOnUiThread {
-                if (this.isReachable) {
+                if (isReachable) {
                     layoutOnline.visibility = View.VISIBLE
                     layoutOffline.visibility = View.GONE
                     layoutCredits.visibility = View.VISIBLE
@@ -86,5 +96,12 @@ class Credits : AppCompatActivity() {
                 }
             }
         }.start()
+    }
+
+    private fun applyDarkMode() {
+        if (savedDarkmode) {
+            layoutCredits?.setBackgroundColor(Color.DKGRAY)
+            headerLayout?.setBackgroundColor(Color.BLACK)
+        }
     }
 }
