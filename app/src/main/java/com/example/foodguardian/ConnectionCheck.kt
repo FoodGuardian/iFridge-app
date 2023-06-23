@@ -7,6 +7,7 @@ import android.net.Network
 import android.net.NetworkRequest
 import androidx.lifecycle.LiveData
 
+// Klasse om te controleren of er een internetverbinding aanwezig is
 class ConnectionCheck(private val connectivityManager: ConnectivityManager):
     LiveData<Boolean>() {
 
