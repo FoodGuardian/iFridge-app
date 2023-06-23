@@ -96,7 +96,7 @@ class Settings : AppCompatActivity() {
 
     private fun updateTheme(isDarkMode: Boolean) {
         val backgroundColor = if (isDarkMode) R.color.dark_gray else android.R.color.white
-        val textColor = if (isDarkMode) android.R.color.white else android.R.color.black
+        val textColor = if (isDarkMode) android.R.color.white else android.R.color.white
         val headerColor = if (isDarkMode) android.R.color.black else R.color.colorPrimary
 
         layoutSettings.setBackgroundColor(ContextCompat.getColor(this, backgroundColor))
