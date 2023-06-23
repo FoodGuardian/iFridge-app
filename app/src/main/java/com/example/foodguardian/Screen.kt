@@ -229,7 +229,7 @@ class Screen : AppCompatActivity() {
                             val daysUntilExpiry =
                                 ChronoUnit.DAYS.between(current, product.value.expirationDate)
                             if (daysUntilExpiry < 3) {
-                                this.productList.getProduct(product.key)?.hasNotified = false
+                                this.productList.getProduct(product.key)?.hasNotified = true
                                 val sharedPreferences: SharedPreferences =
                                     getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
                                 val savedNotification = sharedPreferences.getBoolean("notificationSwitch", false)
