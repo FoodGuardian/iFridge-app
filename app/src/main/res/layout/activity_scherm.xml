@@ -190,7 +190,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center"
-            android:text="@string/gemaakt_door_reaven_tristan_en_kjeld"
+            android:text="@string/gemaakt_door_raeven_tristan_en_kjeld"
             android:textColor="@color/design_default_color_error"
             android:textSize="10sp"
             android:textStyle="bold"
