@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import com.example.foodguardian.R.*
 
 class Settings : AppCompatActivity() {
     private lateinit var layoutSettings: ConstraintLayout
@@ -73,10 +74,15 @@ class Settings : AppCompatActivity() {
 
     private fun saveData() {
         val sharedPreferences: SharedPreferences =
-            getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+            getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
+
         editor.putBoolean("darkmodeSwitch", darkModeSwitch.isChecked)
         editor.putBoolean("notificationSwitch", notificationsSwitch.isChecked)
+
+        editor.putBoolean("darkmodeSwitch", darkModeSwitch.isChecked)
+        editor.putBoolean("notificationSwitch", notificationsSwitch.isChecked)
+
         editor.apply()
         Toast.makeText(this, "Data opgeslagen", Toast.LENGTH_SHORT).show()
     }
