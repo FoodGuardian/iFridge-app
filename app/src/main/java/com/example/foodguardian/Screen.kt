@@ -1,6 +1,5 @@
 package com.example.foodguardian
 
-
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -11,6 +10,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.content.SharedPreferences
@@ -38,16 +38,15 @@ import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.*
 
 class Screen : AppCompatActivity() {
 
     private lateinit var cld: ConnectionCheck
 
     private lateinit var layoutToolBarWithNetwork: ConstraintLayout
-    private lateinit var layoutToolBarWithNoConnectionWithModule : ConstraintLayout
+    private lateinit var layoutToolBarWithNoConnectionWithModule: ConstraintLayout
     private lateinit var layoutToolBarWithNoNetwork: ConstraintLayout
-    private lateinit var layoutCredits : ConstraintLayout
+    private lateinit var layoutCredits: ConstraintLayout
     private lateinit var layoutOnline: TextView
     private lateinit var layoutOffline: TextView
     private lateinit var alarmManager: AlarmManager
@@ -56,7 +55,9 @@ class Screen : AppCompatActivity() {
     private var productList = ProductList(this)
     private var Channel_ID = "Channel_ID_Test"
     private var notifications = arrayListOf<Int>()
-    var isReachable = false
+    private var isReachable = false
+    private lateinit var sharedPreferences: SharedPreferences
+    private var savedDarkmode = false
 
     @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,12 +66,22 @@ class Screen : AppCompatActivity() {
         layoutToolBarWithNetwork = findViewById(R.id.layoutToolBarWithNetwork)
         layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
         layoutCredits = findViewById(R.id.layoutCredits)
-        layoutToolBarWithNoConnectionWithModule = findViewById(R.id.layoutToolBarWithNoConnectionWithModule)
+        layoutToolBarWithNoConnectionWithModule =
+            findViewById(R.id.layoutToolBarWithNoConnectionWithModule)
         layoutOnline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
             .findViewById<TextView>(R.id.layoutOnline)
         layoutOffline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
             .findViewById<TextView>(R.id.layoutOffline)
         checkNetworkConnection()
+
+        sharedPreferences =
+            getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
+        savedDarkmode = sharedPreferences.getBoolean("darkmodeSwitch", false)
+
+        if (savedDarkmode) {
+            setDarkMode()
+        }
+
         val preferences = getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
         if (preferences.getBoolean("firstrun", true)) {
             ensurePermissions()
@@ -140,7 +151,11 @@ class Screen : AppCompatActivity() {
     }
 
     private fun ensurePermissions() {
-        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
     }
@@ -232,7 +247,8 @@ class Screen : AppCompatActivity() {
                                 this.productList.getProduct(product.key)?.hasNotified = true
                                 val sharedPreferences: SharedPreferences =
                                     getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
-                                val savedNotification = sharedPreferences.getBoolean("notificationSwitch", false)
+                                val savedNotification =
+                                    sharedPreferences.getBoolean("notificationSwitch", false)
                                 if (savedNotification) {
                                     sendNotification(product.key)
                                 }
@@ -243,12 +259,13 @@ class Screen : AppCompatActivity() {
             }
         }.start()
     }
-    class AlarmReceiver() : BroadcastReceiver() {
+
+    inner class AlarmReceiver() : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Thread {
-                try
-                {
-                    val connection = URL("http://ifridge.local/fetch").openConnection() as HttpURLConnection
+                try {
+                    val connection =
+                        URL("http://ifridge.local/fetch").openConnection() as HttpURLConnection
                     connection.requestMethod = "POST"
                     connection.doOutput = true
                     connection.connect()
@@ -256,19 +273,29 @@ class Screen : AppCompatActivity() {
                     val bufferReader = BufferedReader(streamReader)
                     val sharedPreferences: SharedPreferences =
                         context.getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
-                    val savedNotification = sharedPreferences.getBoolean("notificationSwitch", false)
+                    val savedNotification =
+                        sharedPreferences.getBoolean("notificationSwitch", false)
                     val products = JSONArray(bufferReader.readText())
                     bufferReader.close()
                     streamReader.close()
                     for (i in 0 until products.length()) {
                         val product = products[i] as JSONObject
                         val expiration = product.getJSONObject("expiration")
-                        val date = LocalDate.of(expiration.getInt("year"), expiration.getInt("month"), expiration.getInt("day"))
-                        if (ChronoUnit.DAYS.between(LocalDate.now(), date) < 3)
-                        {
-                            val formattedDate = date.format(DateTimeFormatter.ofPattern("dd/MM/uuuu"))
+                        val date = LocalDate.of(
+                            expiration.getInt("year"),
+                            expiration.getInt("month"),
+                            expiration.getInt("day")
+                        )
+                        if (ChronoUnit.DAYS.between(LocalDate.now(), date) < 3) {
+                            val formattedDate =
+                                date.format(DateTimeFormatter.ofPattern("dd/MM/uuuu"))
                             val pendingIntent: PendingIntent =
-                                PendingIntent.getActivity(context, 0, Intent(), PendingIntent.FLAG_IMMUTABLE)
+                                PendingIntent.getActivity(
+                                    context,
+                                    0,
+                                    Intent(),
+                                    PendingIntent.FLAG_IMMUTABLE
+                                )
                             val builder = NotificationCompat.Builder(context, "Channel_ID_Test")
                                 .setSmallIcon(R.drawable.ifridge)
                                 .setContentTitle("Houdbaarheid ${product.getString("productName")}")
@@ -277,22 +304,27 @@ class Screen : AppCompatActivity() {
                                 .setContentIntent(pendingIntent)
                             with(NotificationManagerCompat.from(context)) {
                                 val preferences = context.getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
-                                if (!preferences.getBoolean("hasNotified_${product.getInt("productId")}", false)) {
+                                if (!preferences.getBoolean("hasNotified_${product.getString("productId")}", false)) {
                                     if (savedNotification) {
-                                        notify((0..10000).random(), builder.build())
+                                        notify(i, builder.build())
                                     }
-                                    preferences.edit().putBoolean("hasNotified_${product.getInt("productId")}", true).apply()
+                                    preferences.edit().putBoolean("hasNotified_${product.getString("productId")}", true).apply()
                                 }
                             }
                         }
                     }
-                } catch (_: Exception)
-                {
+                } catch (e: Exception) {
+                    // Geen verbinding kunnen maken met het apparaat
                 }
             }.start()
         }
     }
 
+    private fun setDarkMode() {
+        val layout = findViewById<ConstraintLayout>(R.id.layoutToolBarWithNetwork)
+        val header = findViewById<LinearLayout>(R.id.header)
+
+        layout.setBackgroundColor(Color.DKGRAY)
+        header.setBackgroundColor(Color.BLACK)
+    }
 }
-
-
