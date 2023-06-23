@@ -1,5 +1,6 @@
 package com.example.foodguardian
 
+// Imports
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -39,8 +40,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+// Home pagina scherm klasse
 class Screen : AppCompatActivity() {
 
+    // Layout variabelen voor home pagina
     private lateinit var cld: ConnectionCheck
 
     private lateinit var layoutToolBarWithNetwork: ConstraintLayout
@@ -52,6 +55,7 @@ class Screen : AppCompatActivity() {
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
 
+    // Initieer productenlijst
     private var productList = ProductList(this)
     private var Channel_ID = "Channel_ID_Test"
     private var notifications = arrayListOf<Int>()
@@ -59,10 +63,10 @@ class Screen : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private var savedDarkmode = false
 
-    @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scherm)
+        // Initieer verschillende layouts
         layoutToolBarWithNetwork = findViewById(R.id.layoutToolBarWithNetwork)
         layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
         layoutCredits = findViewById(R.id.layoutCredits)
@@ -74,6 +78,7 @@ class Screen : AppCompatActivity() {
             .findViewById<TextView>(R.id.layoutOffline)
         checkNetworkConnection()
 
+        // Zet donkere modus wanneer dit aangezet is
         sharedPreferences =
             getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
         savedDarkmode = sharedPreferences.getBoolean("darkmodeSwitch", false)
@@ -82,6 +87,7 @@ class Screen : AppCompatActivity() {
             setDarkMode()
         }
 
+        // Verzoek om permissies wanneer de app voor het eerst opstart
         val preferences = getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
         if (preferences.getBoolean("firstrun", true)) {
             ensurePermissions()
@@ -90,10 +96,13 @@ class Screen : AppCompatActivity() {
         createNotificationChannel()
         checkStatusChangeStatus()
 
+        // Initieer drawerlayout
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         findViewById<View>(R.id.imageMenudropdown).setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
+
+        // Ga naar andere pagina wanneer er op een item wordt geklikt in de drawerlayout
         findViewById<NavigationView>(R.id.navigationView).setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menuProductList -> {
@@ -115,6 +124,7 @@ class Screen : AppCompatActivity() {
             true
         }
 
+        // Stel alarmmanager in om elke minuut te checken voor nieuwe notificaties
         alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val alarmClass = AlarmReceiver()
         val intent = Intent(this, alarmClass::class.java)
@@ -127,14 +137,17 @@ class Screen : AppCompatActivity() {
             pendingIntent
         )
 
+        // Loop om te checken of een product over de datum is
         dateChecker()
 
+        // Synchroniseer producten met de database
         val refreshLayout = findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
         refreshLayout.setOnRefreshListener {
             this.productList.syncProducts()
         }
     }
 
+    // Zet de juiste layout op basis van of er een verbinding is
     private fun checkNetworkConnection() {
         cld = ConnectionCheck(application)
 
@@ -150,6 +163,7 @@ class Screen : AppCompatActivity() {
         }
     }
 
+    // Vraag om permissies om push notificaties te sturen
     private fun ensurePermissions() {
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(
                 this,
@@ -160,6 +174,7 @@ class Screen : AppCompatActivity() {
         }
     }
 
+    // Maak een nieuw kanaal voor het versturen van notificaties
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Eten is bijna overdatum"
@@ -174,6 +189,7 @@ class Screen : AppCompatActivity() {
         }
     }
 
+    // Stuur een notificatie voor een specifiek product dat deze bijna over de datum gaat
     private fun sendNotification(product: LinearLayout) {
         val product = this.productList.getProduct(product)
         val date = product?.expirationDate?.format(DateTimeFormatter.ofPattern("dd/MM/uuuu"))
@@ -196,6 +212,7 @@ class Screen : AppCompatActivity() {
         }
     }
 
+    // Zet de juiste layout op basis van of de database bereikbaar is
     private fun checkStatusChangeStatus() {
         Thread {
             val host = Constants.baseIp
@@ -204,6 +221,7 @@ class Screen : AppCompatActivity() {
                 findViewById<SwipeRefreshLayout>(R.id.refreshLayout).isRefreshing = true
             }
             try {
+                // Controleer verbinding met de database
                 val socket = Socket()
                 socket.connect(InetSocketAddress(host, port), 5000)
                 this.isReachable = true
@@ -212,8 +230,10 @@ class Screen : AppCompatActivity() {
                 // Kan geen verbinding maken met de opgegeven host en poort
                 this.isReachable = false
             }
+            // Synchroniseer de producten
             this.productList.syncProducts()
             runOnUiThread {
+                // Zet de correcte layout
                 if (this.isReachable) {
                     layoutOnline.visibility = View.VISIBLE
                     layoutOffline.visibility = View.GONE
@@ -227,6 +247,7 @@ class Screen : AppCompatActivity() {
         }.start()
     }
 
+    // Check constant of er een product bijna over de datum gaat en stuur vervolgens een notificatie
     private fun dateChecker() {
         Thread {
             while (true) {
@@ -260,12 +281,14 @@ class Screen : AppCompatActivity() {
         }.start()
     }
 
+    // Achtergrond functie om notificaties op de achtergrond te sturen
     inner class AlarmReceiver() : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Thread {
                 try {
+                    // Vraag alle producten op
                     val connection =
-                        URL("http://ifridge.local/fetch").openConnection() as HttpURLConnection
+                        URL("${Constants.baseUrl}/fetch").openConnection() as HttpURLConnection
                     connection.requestMethod = "POST"
                     connection.doOutput = true
                     connection.connect()
@@ -278,6 +301,7 @@ class Screen : AppCompatActivity() {
                     val products = JSONArray(bufferReader.readText())
                     bufferReader.close()
                     streamReader.close()
+                    // Check voor elk product of deze bijna over de datum gaat
                     for (i in 0 until products.length()) {
                         val product = products[i] as JSONObject
                         val expiration = product.getJSONObject("expiration")
@@ -305,6 +329,7 @@ class Screen : AppCompatActivity() {
                             with(NotificationManagerCompat.from(context)) {
                                 val preferences = context.getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
                                 if (!preferences.getBoolean("hasNotified_${product.getString("productId")}", false)) {
+                                    // Stuur een notificatie wanneer het product bijna over de datum gaat
                                     if (savedNotification) {
                                         notify(i, builder.build())
                                     }
@@ -320,6 +345,7 @@ class Screen : AppCompatActivity() {
         }
     }
 
+    // Stel donkere modus in
     private fun setDarkMode() {
         val layout = findViewById<ConstraintLayout>(R.id.layoutToolBarWithNetwork)
         val header = findViewById<LinearLayout>(R.id.header)
