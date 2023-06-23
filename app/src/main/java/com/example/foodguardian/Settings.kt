@@ -1,8 +1,8 @@
 package com.example.foodguardian
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -15,12 +15,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
-import com.example.foodguardian.R.*
 
 class Settings : AppCompatActivity() {
     private lateinit var layoutSettings: ConstraintLayout
     private lateinit var saveButton: Button
-    private lateinit var notificationsSwitch: Switch
+    private lateinit var notificationSwitch: Switch
     private lateinit var darkModeSwitch: Switch
     private lateinit var headerLayout: View
     private lateinit var textTitle: TextView
@@ -31,7 +30,7 @@ class Settings : AppCompatActivity() {
 
         layoutSettings = findViewById(R.id.layoutSettings)
         saveButton = findViewById(R.id.saveButton)
-        notificationsSwitch = findViewById(R.id.notifications_switch)
+        notificationSwitch = findViewById(R.id.notifications_switch)
         darkModeSwitch = findViewById(R.id.dark_mode_switch)
         headerLayout = findViewById(R.id.header)
         textTitle = findViewById(R.id.textTitle)
@@ -78,10 +77,10 @@ class Settings : AppCompatActivity() {
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
         editor.putBoolean("darkmodeSwitch", darkModeSwitch.isChecked)
-        editor.putBoolean("notificationSwitch", notificationsSwitch.isChecked)
+        editor.putBoolean("notificationSwitch", notificationSwitch.isChecked)
 
         editor.putBoolean("darkmodeSwitch", darkModeSwitch.isChecked)
-        editor.putBoolean("notificationSwitch", notificationsSwitch.isChecked)
+        editor.putBoolean("notificationSwitch", notificationSwitch.isChecked)
 
         editor.apply()
         Toast.makeText(this, "Data opgeslagen", Toast.LENGTH_SHORT).show()
@@ -93,9 +92,9 @@ class Settings : AppCompatActivity() {
         val savedNotification = sharedPreferences.getBoolean("notificationSwitch", true)
         val savedDarkmode = sharedPreferences.getBoolean("darkmodeSwitch", false)
 
-        notificationsSwitch.isChecked = savedNotification
-        darkModeSwitch.isChecked = savedDarkMode
-        updateTheme(savedDarkMode)
+        notificationSwitch.isChecked = savedNotification
+        darkModeSwitch.isChecked = savedDarkmode
+        updateTheme(savedDarkmode)
     }
 
     private fun updateTheme(isDarkMode: Boolean) {
