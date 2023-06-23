@@ -79,9 +79,6 @@ class Settings : AppCompatActivity() {
         editor.putBoolean("darkmodeSwitch", darkModeSwitch.isChecked)
         editor.putBoolean("notificationSwitch", notificationSwitch.isChecked)
 
-        editor.putBoolean("darkmodeSwitch", darkModeSwitch.isChecked)
-        editor.putBoolean("notificationSwitch", notificationSwitch.isChecked)
-
         editor.apply()
         Toast.makeText(this, "Data opgeslagen", Toast.LENGTH_SHORT).show()
     }
