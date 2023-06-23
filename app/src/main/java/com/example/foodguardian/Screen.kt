@@ -14,7 +14,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -67,7 +66,7 @@ class Screen : AppCompatActivity() {
         layoutOffline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
             .findViewById<TextView>(R.id.layoutOffline)
         checkNetworkConnection()
-        var preferences = getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
+        val preferences = getSharedPreferences("com.example.foodguardian", MODE_PRIVATE)
         if (preferences.getBoolean("firstrun", true)) {
             ensurePermissions()
             preferences.edit().putBoolean("firstrun", false).apply()
@@ -248,11 +247,10 @@ class Screen : AppCompatActivity() {
                                 ChronoUnit.DAYS.between(current, product.value.expirationDate)
                             if (daysUntilExpiry < 3) {
                                 this.productList.getProduct(product.key)?.hasNotified = false
-                                sendNotification(product.key)
                                 val sharedPreferences: SharedPreferences =
-                                    getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+                                    getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
                                 val savedNotification = sharedPreferences.getBoolean("notificationSwitch", false)
-                                if (savedNotification == true) {
+                                if (savedNotification) {
                                     sendNotification(product.key)
                                 }
                             }

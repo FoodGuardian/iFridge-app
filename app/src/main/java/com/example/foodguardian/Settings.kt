@@ -74,13 +74,11 @@ class Settings : AppCompatActivity() {
     }
     private fun saveData() {
         val sharedPreferences: SharedPreferences =
-            getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+            getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        editor.apply {
-            editor.putBoolean("darkmodeSwitch", dark_mode_switch.isChecked)
-            editor.putBoolean("notificationSwitch", notifications_switch.isChecked)
-            editor.apply()
-        }.apply()
+        editor.putBoolean("darkmodeSwitch", dark_mode_switch.isChecked)
+        editor.putBoolean("notificationSwitch", notifications_switch.isChecked)
+        editor.apply()
         Toast.makeText(this, "Data opgeslagen", Toast.LENGTH_SHORT).show()
     }
 
