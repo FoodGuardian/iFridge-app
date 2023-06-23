@@ -73,7 +73,7 @@ class Settings : AppCompatActivity() {
 
     private fun saveData() {
         val sharedPreferences: SharedPreferences =
-            getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+            getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
         editor.putBoolean("darkmodeSwitch", darkModeSwitch.isChecked)
