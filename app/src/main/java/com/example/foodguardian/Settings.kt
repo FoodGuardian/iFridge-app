@@ -73,7 +73,7 @@ class Settings : AppCompatActivity() {
 
     private fun saveData() {
         val sharedPreferences: SharedPreferences =
-            getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
+            getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
         editor.putBoolean("darkmodeSwitch", darkModeSwitch.isChecked)
@@ -95,7 +95,7 @@ class Settings : AppCompatActivity() {
     }
 
     private fun updateTheme(isDarkMode: Boolean) {
-        val backgroundColor = if (isDarkMode) R.color.dark_grey else android.R.color.white
+        val backgroundColor = if (isDarkMode) R.color.dark_gray else android.R.color.white
         val textColor = if (isDarkMode) android.R.color.white else android.R.color.black
         val headerColor = if (isDarkMode) android.R.color.black else R.color.colorPrimary
 
