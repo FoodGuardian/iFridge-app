@@ -1,46 +1,41 @@
 package com.example.foodguardian
 
 import android.content.Intent
-import android.os.Bundle
-
 import android.content.SharedPreferences
 import android.content.Context
+import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.example.foodguardian.R.*
 import com.google.android.material.navigation.NavigationView
+import com.example.foodguardian.R.*
 
 class Settings : AppCompatActivity() {
-    private lateinit var cld: ConnectionCheck
-    private lateinit var layoutToolBarWithNoConnectionWithModule : ConstraintLayout
-    private lateinit var layoutToolBarWithNoNetwork: ConstraintLayout
-    private lateinit var layoutOnline: TextView
-    private lateinit var layoutOffline: TextView
+    private lateinit var layoutSettings: ConstraintLayout
     private lateinit var saveButton: Button
-    private lateinit var notifications_switch: Switch
-    private lateinit var dark_mode_switch: Switch
+    private lateinit var notificationsSwitch: Switch
+    private lateinit var darkModeSwitch: Switch
+    private lateinit var headerLayout: View
+    private lateinit var textTitle: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(layout.settings_page)
-        saveButton = findViewById<Button>(R.id.saveButton)
-        notifications_switch = findViewById<Switch>(R.id.notifications_switch)
-        dark_mode_switch = findViewById<Switch>(R.id.dark_mode_switch)
-        layoutToolBarWithNoNetwork = findViewById(R.id.layoutToolBarWithNoNetwork)
-        layoutToolBarWithNoConnectionWithModule = findViewById(R.id.layoutToolBarWithNoConnectionWithModule)
-        layoutOnline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
-            .findViewById<TextView>(R.id.layoutOnline)
-        layoutOffline = findViewById<NavigationView>(R.id.navigationView).getHeaderView(0)
-            .findViewById<TextView>(R.id.layoutOffline)
-        checkNetworkConnection()
+        setContentView(R.layout.settings_page)
+
+        layoutSettings = findViewById(R.id.layoutSettings)
+        saveButton = findViewById(R.id.saveButton)
+        notificationsSwitch = findViewById(R.id.notifications_switch)
+        darkModeSwitch = findViewById(R.id.dark_mode_switch)
+        headerLayout = findViewById(R.id.header)
+        textTitle = findViewById(R.id.textTitle)
+
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         findViewById<View>(R.id.imageMenudropdown).setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
@@ -71,13 +66,23 @@ class Settings : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+
+        darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            updateTheme(isChecked)
+        }
     }
+
     private fun saveData() {
         val sharedPreferences: SharedPreferences =
             getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        editor.putBoolean("darkmodeSwitch", dark_mode_switch.isChecked)
-        editor.putBoolean("notificationSwitch", notifications_switch.isChecked)
+
+        editor.putBoolean("darkmodeSwitch", darkModeSwitch.isChecked)
+        editor.putBoolean("notificationSwitch", notificationsSwitch.isChecked)
+
+        editor.putBoolean("darkmodeSwitch", darkModeSwitch.isChecked)
+        editor.putBoolean("notificationSwitch", notificationsSwitch.isChecked)
+
         editor.apply()
         Toast.makeText(this, "Data opgeslagen", Toast.LENGTH_SHORT).show()
     }
@@ -88,22 +93,18 @@ class Settings : AppCompatActivity() {
         val savedNotification = sharedPreferences.getBoolean("notificationSwitch", true)
         val savedDarkmode = sharedPreferences.getBoolean("darkmodeSwitch", false)
 
-        notifications_switch.isChecked = savedNotification
-        dark_mode_switch.isChecked = savedDarkmode
+        notificationsSwitch.isChecked = savedNotification
+        darkModeSwitch.isChecked = savedDarkMode
+        updateTheme(savedDarkMode)
     }
 
-    private fun checkNetworkConnection() {
-        cld = ConnectionCheck(application)
+    private fun updateTheme(isDarkMode: Boolean) {
+        val backgroundColor = if (isDarkMode) R.color.dark_grey else android.R.color.white
+        val textColor = if (isDarkMode) android.R.color.white else android.R.color.black
+        val headerColor = if (isDarkMode) android.R.color.black else R.color.colorPrimary
 
-        cld.observe(this) { isConnected ->
-            if (isConnected) {
-                layout.settings_page = View.VISIBLE
-                layoutToolBarWithNoNetwork.visibility = View.GONE
-            } else {
-                layout.settings_page = View.GONE
-                layoutToolBarWithNoNetwork.visibility = View.VISIBLE
-                layoutToolBarWithNoConnectionWithModule.visibility = View.GONE
-            }
-        }
+        layoutSettings.setBackgroundColor(ContextCompat.getColor(this, backgroundColor))
+        textTitle.setTextColor(ContextCompat.getColor(this, textColor))
+        headerLayout.setBackgroundColor(ContextCompat.getColor(this, headerColor))
     }
 }
