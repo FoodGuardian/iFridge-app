@@ -73,15 +73,18 @@ class Settings : AppCompatActivity() {
 
     private fun saveData() {
         val sharedPreferences: SharedPreferences =
-            getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
+            getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
-
         editor.putBoolean("darkmodeSwitch", darkModeSwitch.isChecked)
+<<<<<<< Updated upstream
         editor.putBoolean("notificationSwitch", notificationSwitch.isChecked)
 
         editor.putBoolean("darkmodeSwitch", darkModeSwitch.isChecked)
         editor.putBoolean("notificationSwitch", notificationSwitch.isChecked)
 
+=======
+        editor.putBoolean("notificationSwitch", notificationsSwitch.isChecked)
+>>>>>>> Stashed changes
         editor.apply()
         Toast.makeText(this, "Data opgeslagen", Toast.LENGTH_SHORT).show()
     }
@@ -98,7 +101,7 @@ class Settings : AppCompatActivity() {
     }
 
     private fun updateTheme(isDarkMode: Boolean) {
-        val backgroundColor = if (isDarkMode) R.color.dark_grey else android.R.color.white
+        val backgroundColor = if (isDarkMode) R.color.dark_gray else android.R.color.white
         val textColor = if (isDarkMode) android.R.color.white else android.R.color.black
         val headerColor = if (isDarkMode) android.R.color.black else R.color.colorPrimary
 
