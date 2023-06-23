@@ -84,8 +84,8 @@ class Settings : AppCompatActivity() {
 
     private fun loadData() {
         val sharedPreferences: SharedPreferences =
-            getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-        val savedNotification = sharedPreferences.getBoolean("notificationSwitch", false)
+            getSharedPreferences("com.example.foodguardian", Context.MODE_PRIVATE)
+        val savedNotification = sharedPreferences.getBoolean("notificationSwitch", true)
         val savedDarkmode = sharedPreferences.getBoolean("darkmodeSwitch", false)
 
         notifications_switch.isChecked = savedNotification
